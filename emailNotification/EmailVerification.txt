@@ -1,0 +1,11 @@
+Dear #(firstName) #(lastName),
+
+Final step...
+Follow this link to verify your email address.
+
+#(https://www.youtube.com/watch?v=OxGsU8oIWjY&ab_channel=Veritasium) 
+
+If you didn’t ask to verify this address, you can ignore this email.
+
+Thanks,
+The Allen CS team

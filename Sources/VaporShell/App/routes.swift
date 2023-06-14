@@ -25,6 +25,9 @@ func routes(_ app: Application) throws {
     app.get { req in
         return "It works!"
     }
+    app.get("") {req in
+        req.view.render("login.html")
+    }
 
     // Find an employee with the specified ID
     try employeesController.getEmployeeById(app)
