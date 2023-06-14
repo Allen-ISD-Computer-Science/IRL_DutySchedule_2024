@@ -1,3 +1,4 @@
+
 const notificationButton = document.getElementById("notification-button");
 
 //doing something on click
@@ -28,6 +29,3 @@ function testEmail() {
 	}
     });
 }
-
-
-
