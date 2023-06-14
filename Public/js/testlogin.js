@@ -69,4 +69,4 @@ async function sendLogin(email, password) {
 	}
     });
 }
->>>>>>> 6ffb0ac3008ab90c83f7b7a9b2fd6065dba212bb
+
