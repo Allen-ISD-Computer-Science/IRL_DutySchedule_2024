@@ -20,7 +20,7 @@ import FluentMySQLDriver
 // configures your application
 func configure(_ app: Application) throws {
     // UNCOMMENT-PUBLIC to serve files from /Public folder
-    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
     var tls = TLSConfiguration.makeClientConfiguration()
     tls.certificateVerification = .none
