@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 const notificationButton = document.getElementById("notification-button");
 
 notificationButton.addEventListener("click", async () => {
@@ -25,7 +25,7 @@ notificationButton.addEventListener("click", async () => {
 	}
     }
 });
-=======
+
 const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-form-submit");
 const loginErrorMsg = document.getElementById("login-error-msg");
