@@ -18,8 +18,6 @@ import Vapor
 import Fluent
 import FluentMySQLDriver
 
-let employeesController = EmployeesController()
-
 func routes(_ app: Application) throws {
     
     app.get { req in
@@ -27,17 +25,5 @@ func routes(_ app: Application) throws {
     }
     app.get("") {req in
         req.view.render("login.html")
-    }
-
-    // Find an employee with the specified ID
-    try employeesController.getEmployeeById(app)
-
-    /// This API endpoint provides a list of all employees
-    /// Paging is supported
-    /// Endpoint URI: /employees
-    app.get("employees") { req -> Page<Employee>  in
-        let employees = try await Employee.query(on: req.db)
-          .paginate(for: req)
-        return employees
     }
 }
