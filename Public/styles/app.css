@@ -1,0 +1,176 @@
+body {
+    background-color: #354152;
+    color: #7e8ba3;
+    font: 300 1rem/1.5 Helvetica Neue, sans-serif;
+    margin-top: 60px;
+    min-height: 100%;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: #7e8ba3;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: #111;
+}
+.active {
+	background-color: #354152;
+}
+
+#userSearch {
+    
+    background-image: url('https://cdn-icons-png.flaticon.com/512/6372/6372641.png'); /* Add a search icon to input */
+    
+    background-position: 10px 12px; /* Position the search icon */
+    
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+    
+    width: 100%; /* Full-width */
+    
+    font-size: 16px; /* Increase font-size */
+    
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    
+    border: 1px solid #ddd; /* Add a grey border */
+    
+    margin-bottom: 12px; /* Add some space below the input */
+    
+}
+
+
+
+#userTable {
+    
+    border-collapse: collapse; /* Collapse borders */
+    
+    width: 100%; /* Full-width */
+    
+    border: 1px solid #ddd; /* Add a grey border */
+    
+    font-size: 18px; /* Increase font-size */
+    
+}
+
+
+
+#userTable th, #userTable td {
+    
+    text-align: left; /* Left-align text */
+    
+    padding: 12px; /* Add padding */
+    
+}
+
+
+
+#userTable tr {
+    
+    /* Add a bottom border to all table rows */
+    
+    border-bottom: 1px solid #ddd;
+    
+}
+
+
+
+#userTable tr.header, #userTable tr:hover {
+    
+    /* Add a grey background color to the table header and on hover */
+    
+    background-color: #f1f1f1;
+    
+}
+
+/* The Modal (background) */
+
+.modal {
+    
+    display: none; /* Hidden by default */
+    
+    position: fixed; /* Stay in place */
+    
+    z-index: 1; /* Sit on top */
+    
+    left: 0;
+    
+    top: 0;
+    
+    width: 100%; /* Full width */
+    
+    height: 100%; /* Full height */
+    
+    overflow: auto; /* Enable scroll if needed */
+    
+    background-color: rgb(0,0,0); /* Fallback color */
+    
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    
+}
+
+
+
+/* Modal Content/Box */
+
+.modal-content {
+    
+    background-color: #fefefe;
+    
+    margin: 15% auto; /* 15% from the top and centered */
+    
+    padding: 20px;
+    
+    border: 1px solid #888;
+    
+    width: 80%; /* Could be more or less, depending on screen size */
+    
+}
+
+
+
+/* The Close Button */
+
+.close {
+    
+    color: #aaa;
+    
+    float: right;
+    
+    font-size: 28px;
+    
+    font-weight: bold;
+    
+}
+
+
+
+.close:hover,
+
+.close:focus {
+    
+    color: black;
+    
+    text-decoration: none;
+    
+    cursor: pointer;
+    
+}
+

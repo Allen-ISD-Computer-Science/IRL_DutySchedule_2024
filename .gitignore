@@ -1,0 +1,11 @@
+.build
+.DS_Store
+*.xcodeproj
+DerivedData/
+Package.resolved
+Tests/LinuxMain.swift
+.vscode
+*~
+\#*\#
+.dir-locals.el
+.env*
