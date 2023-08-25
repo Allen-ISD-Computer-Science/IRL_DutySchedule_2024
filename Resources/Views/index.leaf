@@ -1,0 +1,29 @@
+#extend("base"):
+#export("body"):
+<div class="container bg-body my-5 py-3 bg text-center">
+    <h1>AllenISD Duty Scheduler</h1>
+</div>
+<form class="form-control form-control-lg container my-5">
+    <div class="mb-3">
+        <label for="emailInput" class="form-label">Email address</label>
+        <div class="input-group">
+            <input type="text" pattern="[a-z0-9._%+-]+.[a-z0-9-]$" class="form-control" id="emailInput" aria-describedby="email-extension emailHelp">
+            <span class="input-group-text" id="email-extension">@allenisd.org</span>
+        </div>
+        <div id="emailHelp" class="form-text">Some sub text i guess.</div>
+    </div>
+    <div class="mb-3">
+        <label for="passwordInput" class="form-label">Password</label>
+        <input type="password" class="form-control" id="passwordInput">
+    </div>
+    <div>
+        <div class="d-flex mb-2">
+            <button type="submit" class="me-auto btn btn-primary">Submit</button>
+            <button class="justify-content-end btn btn-link">Register</button>
+            <button class="justify-content-end btn btn-link">Forgot Password?</button>
+        </div>
+    </div>
+</form>
+#import("footer")
+#endexport
+#endextend

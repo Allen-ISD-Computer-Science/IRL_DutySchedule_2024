@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <title>#(title) - AHSConferencesApp</title>
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container-fluid">
+    #import("body")
+  </div>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

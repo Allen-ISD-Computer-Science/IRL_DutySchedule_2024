@@ -16,6 +16,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import Vapor
 import Fluent
 import FluentMySQLDriver
+import Leaf
 
 // configures your application
 func configure(_ app: Application) throws {
@@ -45,6 +46,9 @@ func configure(_ app: Application) throws {
         fatalError("Failed to determine VAPOR LOCAL HOST from environment")
     }
     app.http.server.configuration.hostname = hostname
+
+    // Register leaf
+    app.views.use(.leaf)
 
     // register routes
     try routes(app)
