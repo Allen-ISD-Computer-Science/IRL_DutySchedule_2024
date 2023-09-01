@@ -33,24 +33,21 @@ private struct ModelCustomAuthenticator<User>: CredentialsAuthenticator
     public let database: DatabaseID?
 
     func authenticate(credentials: ModelCredentials, for request: Request) -> EventLoopFuture<Void> {
-        let emailData = Data(credentials.username.utf8)
-        let hashedEmail = SHA256.hash(data: emailData)
-        //print("TRYING TO AUTH: \n LOOKING FOR: \(hashedEmail.hex)")
-         return User.query(on: request.db(self.database))
-          .filter(\._$emailHash == hashedEmail.hex)
-          .first()
-          .flatMapThrowing{ foundUser in   
-              guard let user = foundUser else {
-                return
-              }
-              guard try user.verify(email: credentials.username) else {
-                  return
-              }
-              guard try user.verify(password: credentials.password) else {
-                  return
-              }
-              request.auth.login(user)
-          }
+        return User.query(on: request.db(self.database))
+           .filter(\._$emailHash == credentials.username)
+           .first()
+           .flatMapThrowing{ foundUser in   
+               guard let user = foundUser else {
+               return
+           }
+               guard try user.verify(email: credentials.username) else {
+               return
+           }
+               guard try user.verify(password: credentials.password) else {
+               return
+           }
+               request.auth.login(user)
+           }
     }
     
 }

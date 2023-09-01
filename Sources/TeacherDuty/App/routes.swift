@@ -28,16 +28,16 @@ func routes(_ app: Application) throws {
         try User.Email.validate(content: req)
         let create = try req.content.decode(User.Email.self)
         
-        let emailData = Data(create.email.utf8)
-        let hashedEmail = SHA256.hash(data: emailData)
-        //print("SAVING: \(hashedEmail.hex)")
         let verifyToken = randomString(length: 6)
         let user = User(
-          email: hashedEmail.hex,
+          firstName: create.firstName,
+          lastName: create.lastName,
+          email: create.email,
           passwordHash: "NULL",
           token: verifyToken
         )
 
+        // CHECK IF A USER WITH THAT EMAIL ALREADY EXISTS
         let userExist = try await User.query(on: req.db).filter(\.$email == user.email).first()
 
         if userExist?.isActive == 1 {
@@ -45,7 +45,8 @@ func routes(_ app: Application) throws {
             return error
         }
         
-               
+
+        // IF A USER WITH THAT EMAIL DOESNT ALREADY EXIST CREATE NEW USER
         if userExist != nil{
             if userExist?.isActive == 0 {
                 let curTime = Date()
@@ -54,7 +55,7 @@ func routes(_ app: Application) throws {
 
                     let emailApi = TeacherDuty.getEnvString("EMAIL_API")
                     let response = try await req.client.post("\(emailApi)") { req in
-                        let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
+                        let contact = Contact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
                         let emailData = EmailData(contact: contact,
                                                   templateName: "cmwModelSchedulerVerification",
                                                   templateParameters:
@@ -69,7 +70,7 @@ func routes(_ app: Application) throws {
 
                     try await User.query(on: req.db)
                       .set(\.$token, to: verifyToken)
-                      .filter(\.$email == hashedEmail.hex)
+                      .filter(\.$email == create.email)
                       .update()
                     
                     let error = CustomError(error: "Another email has been sent, click the link in your email to proceed.")
@@ -84,7 +85,7 @@ func routes(_ app: Application) throws {
         else {
             let emailApi = TeacherDuty.getEnvString("EMAIL_API")
             let response = try await req.client.post("\(emailApi)") { req in
-                let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
+                let contact = Contact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
                 let emailData = EmailData(contact: contact,
                                           templateName: "cmwModelSchedulerVerification",
                                           templateParameters:
@@ -161,12 +162,11 @@ func routes(_ app: Application) throws {
        try User.Email.validate(content: req)
        let create = try req.content.decode(User.Email.self)
        
-       let emailData = Data(create.email.utf8)
-       let hashedEmail = SHA256.hash(data: emailData)
-       //print("SAVING: \(hashedEmail.hex)")
        let verifyToken = randomString(length: 6)
        let user = User(
-         email: hashedEmail.hex,
+         firstName: create.firstName,
+         lastName: create.lastName,
+         email: create.email,
          passwordHash: "NULL",
          token: verifyToken
        )
@@ -194,7 +194,7 @@ func routes(_ app: Application) throws {
                    
                    try await User.query(on: req.db)
                      .set(\.$token, to: verifyToken)
-                     .filter(\.$email == hashedEmail.hex)
+                     .filter(\.$email == create.email)
                      .update()
                    
                    let error = CustomError(error: "Email has been sent, click the link in your email to proceed.")
@@ -275,38 +275,6 @@ func routes(_ app: Application) throws {
     adminProtected.get("adminPanel", "data") { req -> [User] in
         let users = try await User.query(on: req.db).all()
         return users
-    }
-
-    adminProtected.post("adminPanel", "createUser") { req -> CustomError in
-        //TODO - Fix this endpoint to conform to new database structure
-        /*
-        let userCreate = try req.content.decode(User.Create.self)
-        
-        let user = User(
-          name: userCreate.name,
-          userID: userCreate.userID,
-          canView: userCreate.canView,
-          canEdit: userCreate.canEdit,
-          isAdmin: userCreate.isAdmin
-        )
-
-        let userExist = try await User.query(on: req.db).filter(\.$userID == user.userID).first()
-
-        if userExist == nil{
-            try await user.save(on: req.db)
-            let error = CustomError(error: "User Created.")
-            return error
-        }
-        else {
-            let error = CustomError(error: "User Already Exists.")
-            return error
-            
-        }
-    
-         */
-        let error = CustomError(error: "Fatal Error, please try again later.")
-        return error
-                
     }
 
     adminProtected.post("adminPanel", "removeUser") { req -> CustomError in
