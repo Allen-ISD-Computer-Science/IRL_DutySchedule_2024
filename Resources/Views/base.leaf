@@ -4,6 +4,7 @@
   <meta charset="utf-8"/>
   <title>#(title) - AHSConferencesApp</title>
   <link href="./css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
   <div class="container-fluid">
