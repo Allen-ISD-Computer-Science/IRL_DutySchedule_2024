@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Admin View</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="index.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,700;1,300&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+<div class="header">    
+    <p>Teacher Duty Scheduler
+    </p>
+    <p class="align-right">
+        Admin View
+    </p>
+</div>
+<div class="admin">
+
+<img id="step1" src="step1circle.png"/>
+
+
+<p class="space">Upload the CSV File</p>
+<form action="/action_page.php" id="form">
+    <input type="file" id="csv_file" name="csv_file" accept=".csv">
+    <input type="submit" id="submit">
+  </form>
+  
+
+<img id="step2" src="step2circle.png"/>
+
+
+<p class="space2">Wait a few moments for the CSV file to be processed</p>
+
+
+<img id="step3" src="step3circle.png"/>
+
+
+<p class="space3">Click here to view the job schedule</p>
+<form action="/action_page.php">
+    <input type="button" id="submit" value="View">
+  </form>
+</div>
+
+
+</body>
+</html>
