@@ -7,8 +7,6 @@ Jishnu- Project manager
 
 Pranav - Database
 
-Preetham- UI/UX
-
 Jakob- Security
 
 Ryan- Software Engineer
