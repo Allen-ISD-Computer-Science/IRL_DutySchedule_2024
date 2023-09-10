@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "VaporShell",
+  name: "TeacherDuty",
   dependencies: [
       .package(url: "https://github.com/apple/swift-atomics.git", from: "1.0.2")
   ],
@@ -13,7 +13,7 @@ let package = Package(
     // Targets can depend on other targets in this package, and on products in packages which this package depends on.
     .target(name: "CBase32"),
     .target(name: "CVaporBcrypt"),
-    .executableTarget(name: "VaporShell", dependencies: [
+    .executableTarget(name: "TeacherDuty", dependencies: [
                                             .product(name: "Atomics", package: "swift-atomics"),
                                             .target(name: "CBase32"),
                                             .target(name: "CVaporBcrypt")
