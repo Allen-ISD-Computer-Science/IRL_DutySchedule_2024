@@ -22,11 +22,11 @@ func configure(_ app: Application) throws {
     var tls = TLSConfiguration.makeClientConfiguration()
     tls.certificateVerification = .none
     app.databases.use(.mysql(
-                        hostname: getEnvString("MYSQL_HOSTNAME", "db"),
+                        hostname: getEnvString("VAPOR_SQL_HOSTNAME", "db"),
                         port: Int(getEnvString("MYSQL_PORT", String(MySQLConfiguration.ianaPortNumber)))!, // messy
-                        username: getEnvString("MYSQL_USERNAME"),
-                        password: getEnvString("MYSQL_PASSWORD"),
-                        database: getEnvString("MYSQL_DATABASE_NAME"),
+                        username: getEnvString("VAPOR_SQL_USERNAME"),
+                        password: getEnvString("VAPOR_SQL_PASSWORD"),
+                        database: getEnvString("VAPOR_SQL_DATABASE"),
                         tlsConfiguration: tls
                       ), as: .mysql)
 
