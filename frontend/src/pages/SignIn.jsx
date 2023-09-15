@@ -116,7 +116,7 @@ function SignIn() {
 
                                         <div className="text-center">
                                             <p>Don't have an account?</p>
-                                            <a href="/signup">Sign Up</a>
+                                            <a href="./signup">Sign Up</a>
                                         </div>
 
                                         {/*

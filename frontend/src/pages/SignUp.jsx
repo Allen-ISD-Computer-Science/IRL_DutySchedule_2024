@@ -135,7 +135,7 @@ function SignUp() {
 
                                         <div className="text-center">
                                             <p>Already have an account?</p>
-                                            <a href="/signin">Sign In</a>
+                                            <a href="./signin">Sign In</a>
                                         </div>
                                     </form>
                                 </div>
