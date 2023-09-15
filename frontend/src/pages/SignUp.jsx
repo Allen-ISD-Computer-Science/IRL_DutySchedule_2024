@@ -2,32 +2,30 @@ import { useState } from "react";
 
 import Button from "react-bootstrap/Button";
 
-function SignIn() {
+function SignUp() {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
 
-    const sendLogin = async (e) => {
+    const sendAccountCreate = async (e) => {
         e.preventDefault();
 
-        const user = document.getElementById("signInEmail").value,
-            pass = document.getElementById("signInPassword").value;
-        const formBody = new URLSearchParams();
-        formBody.append("username", user);
-        formBody.append("password", pass);
-        const response = await fetch("./login", {
+        const response = await fetch("./createuser", {
             method: "POST",
             headers: {
                 Accept: "application/json",
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
             },
-            body: formBody.toString(),
+            body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+            }),
         });
 
         response.json().then((data) => {
             if (data.reason) {
                 alert(data.reason);
-            } else if (data.error === "Success") {
-                window.location.href = process.env.PUBLIC_URL + "/dashboard";
             } else {
                 alert(data.error);
             }
@@ -63,11 +61,53 @@ function SignIn() {
                         <div className="col-lg-6 mb-5 mb-lg-0">
                             <div className="card">
                                 <div className="card-body py-5 px-md-5">
-                                    <form onSubmit={sendLogin}>
+                                    <form onSubmit={sendAccountCreate}>
+                                        <div className="form-outline mb-4">
+                                            <input
+                                                type="text"
+                                                id="signUpFirstName"
+                                                className="form-control"
+                                                value={firstName}
+                                                onChange={(e) =>
+                                                    setFirstName(
+                                                        e.currentTarget.value
+                                                    )
+                                                }
+                                                required
+                                            />
+                                            <label
+                                                className="form-label"
+                                                htmlFor="signUpFirstName"
+                                            >
+                                                First Name
+                                            </label>
+                                        </div>
+
+                                        <div className="form-outline mb-4">
+                                            <input
+                                                type="text"
+                                                id="signUpLastName"
+                                                className="form-control"
+                                                value={lastName}
+                                                onChange={(e) =>
+                                                    setLastName(
+                                                        e.currentTarget.value
+                                                    )
+                                                }
+                                                required
+                                            />
+                                            <label
+                                                className="form-label"
+                                                htmlFor="signUpLastName"
+                                            >
+                                                Last Name
+                                            </label>
+                                        </div>
+
                                         <div className="form-outline mb-4">
                                             <input
                                                 type="email"
-                                                id="signInEmail"
+                                                id="signUpEmail"
                                                 className="form-control"
                                                 value={email}
                                                 onChange={(e) =>
@@ -79,30 +119,9 @@ function SignIn() {
                                             />
                                             <label
                                                 className="form-label"
-                                                htmlFor="signInEmail"
+                                                htmlFor="signUpEmail"
                                             >
                                                 Email address
-                                            </label>
-                                        </div>
-
-                                        <div className="form-outline mb-4">
-                                            <input
-                                                type="password"
-                                                id="signInPassword"
-                                                className="form-control"
-                                                value={password}
-                                                onChange={(e) =>
-                                                    setPassword(
-                                                        e.currentTarget.value
-                                                    )
-                                                }
-                                                required
-                                            />
-                                            <label
-                                                className="form-label"
-                                                htmlFor="signInPassword"
-                                            >
-                                                Password
                                             </label>
                                         </div>
 
@@ -111,22 +130,13 @@ function SignIn() {
                                             className="btn-block mb-4"
                                             type="submit"
                                         >
-                                            Sign In
+                                            Sign Up
                                         </Button>
 
                                         <div className="text-center">
-                                            <p>Don't have an account?</p>
-                                            <a href="/signup">Sign Up</a>
+                                            <p>Already have an account?</p>
+                                            <a href="/signin">Sign In</a>
                                         </div>
-
-                                        {/*
-                        <div className="text-center">
-                            <p>or sign in with:</p>
-                            <button type="button" className="btn btn-link btn-floating mx-1">
-                                <FontAwesomeIcon icon={faGoogle} />
-                            </button>
-                            </div>
-					 */}
                                     </form>
                                 </div>
                             </div>
@@ -138,4 +148,4 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default SignUp;

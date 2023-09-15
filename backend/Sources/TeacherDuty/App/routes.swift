@@ -12,10 +12,18 @@ func routes(_ app: Application) throws {
     }
 
     // 1
-    app.get { req in
+    app.get("") {req in
+        // todo: if a user, redirect to dashboard
+        req.redirect(to: "./signin")
+    }
+    
+    app.get("signin") { req in
         return serveIndex(req, app)
     }
     
+    app.get("signup") { req in
+        return serveIndex(req, app)
+    }
     
     app.get("admin") { req in
         return serveIndex(req, app)

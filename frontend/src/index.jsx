@@ -8,13 +8,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from './pages/Dashboard';
 import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 import Admin from './pages/Admin';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <SignIn />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "/signin",
+    element: <SignIn />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
   },
   {
     path: "/admin",
