@@ -16,15 +16,16 @@ func routes(_ app: Application) throws {
         return serveIndex(req, app)
     }
     
-    // 2
-    app.get("*") { req in
+    
+    app.get("admin") { req in
         return serveIndex(req, app)
     }
-    /*
-    app.get("index") { req in
+
+    app.get("dashboard") { req in
         return serveIndex(req, app)
     }
     
+    /*
     app.get("") {req in
         req.redirect(to: "./login")
     }
