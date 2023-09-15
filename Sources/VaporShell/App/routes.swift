@@ -24,6 +24,6 @@ func routes(_ app: Application) throws {
         return "It works!"
     }
     app.get("") {req in
-        req.view.render("login.html")
+        req.view.render("adminView.html")
     }
 }
