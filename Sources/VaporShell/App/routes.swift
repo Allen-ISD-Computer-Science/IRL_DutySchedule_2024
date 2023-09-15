@@ -25,5 +25,9 @@ func routes(_ app: Application) throws {
     }
     app.get("") {req in
         req.view.render("adminView.html")
+ 
+    }
+    app.get("adminView.css") { req in
+        return req.fileio.streamFile(at: "adminView.css")
     }
 }
