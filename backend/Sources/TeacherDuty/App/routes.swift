@@ -5,6 +5,25 @@ import Crypto
 
 
 func routes(_ app: Application) throws {
+
+    /* Function that returns the content of the `index.html` file from the Public folder */
+    func serveIndex(_ req: Request, _ app: Application) -> Response {
+        return req.fileio.streamFile(at: "\(app.directory.publicDirectory)/index.html")
+    }
+
+    // 1
+    app.get { req in
+        return serveIndex(req, app)
+    }
+    
+    // 2
+    app.get("*") { req in
+        return serveIndex(req, app)
+    }
+    /*
+    app.get("index") { req in
+        return serveIndex(req, app)
+    }
     
     app.get("") {req in
         req.redirect(to: "./login")
@@ -13,7 +32,7 @@ func routes(_ app: Application) throws {
     app.get("login") {req -> View in
         req.auth.logout(User.self)
         return try await req.view.render("login.html")
-    }
+    }*/
 
     app.get("createuser.html") {req in
         req.redirect(to: "./createuser")

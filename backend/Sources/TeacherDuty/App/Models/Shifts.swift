@@ -18,7 +18,7 @@ final class Shifts: Model, Content {
     @ID(custom: "positionID", generatedBy: .database)
     var positionID: Int?
 
-    @Field(key: "startTime")
+//    @Field(key: "startTime")
     //var startTime: TIME
     
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)

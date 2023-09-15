@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Table from 'react-bootstrap/Table';
+import { Table, Button, Container } from 'react-bootstrap';
 
-import Navbar from '../components/Navbar'
+import AdminNavbar from '../components/AdminNavbar'
 
 function Admin() {
     const [teachersData, setTeachersData] = useState(null);
@@ -77,10 +77,10 @@ function Admin() {
 
     return (
         <main className="fullPage" style={{ backgroundColor: "hsl(0, 0%, 96%)" }}>
-            <Navbar />
+            <AdminNavbar />
             <section className="d-flex align-items-center">
                 <div className="w-100 px-4 py-5 px-md-5 text-center text-lg-start">
-                    <div className="container">
+                    <Container>
                         <Table responsive>
                             <thead>
                                 <tr>
@@ -102,7 +102,7 @@ function Admin() {
                                                 { editableCell('email', data.email) }
 
                                                 <td className='text-center'>
-                                                    <button className="btn btn-primary text-nowrap">Show Avaliability</button>
+                                                    <Button className="text-nowrap">Show Avaliability</Button>
                                                 </td>
                                             </tr>
                                         );
@@ -110,7 +110,7 @@ function Admin() {
                                 }
                             </tbody>
                         </Table>
-                    </div>
+                    </Container>
                 </div>
             </section>
         </main>

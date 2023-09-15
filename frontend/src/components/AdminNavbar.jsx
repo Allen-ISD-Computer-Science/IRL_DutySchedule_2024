@@ -2,11 +2,11 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-function NavbarComponent() {
+function AdminNavbarComponent() {
   return (
     <Navbar bg="primary" data-bs-theme="dark">
         <Container>
-            <Navbar.Brand href="/dashboard">AHS Conferences</Navbar.Brand>
+            <Navbar.Brand href="/admin">AHS Conferences | Admin</Navbar.Brand>
             <Nav className="me-auto">
                 <Nav.Link href="#">Home</Nav.Link>
             </Nav>
@@ -15,4 +15,4 @@ function NavbarComponent() {
   );
 }
 
-export default NavbarComponent;
+export default AdminNavbarComponent;
