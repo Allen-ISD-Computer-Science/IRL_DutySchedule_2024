@@ -7,7 +7,6 @@ func configure(_ app: Application) throws {
     
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     app.middleware.use(app.sessions.middleware)
-    app.views.use(.leaf)
 
     // Configuration
     //app.mailgun.configuration = .init(apiKey: getEnvString("MAILGUN_APIKEY"))
@@ -22,11 +21,11 @@ func configure(_ app: Application) throws {
     var tls = TLSConfiguration.makeClientConfiguration()
     tls.certificateVerification = .none
     app.databases.use(.mysql(
-                        hostname: getEnvString("VAPOR_SQL_HOSTNAME", "db"),
+                        hostname: getEnvString("MYSQL_HOSTNAME", "db"),
                         port: Int(getEnvString("MYSQL_PORT", String(MySQLConfiguration.ianaPortNumber)))!, // messy
-                        username: getEnvString("VAPOR_SQL_USERNAME"),
-                        password: getEnvString("VAPOR_SQL_PASSWORD"),
-                        database: getEnvString("VAPOR_SQL_DATABASE"),
+                        username: getEnvString("MYSQL_USERNAME"),
+                        password: getEnvString("MYSQL_PASSWORD"),
+                        database: getEnvString("MYSQL_DATABASE_NAME"),
                         tlsConfiguration: tls
                       ), as: .mysql)
 
