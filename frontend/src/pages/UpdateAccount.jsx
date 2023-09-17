@@ -113,7 +113,7 @@ function UpdateAccount() {
 
                                         <div className="form-outline mb-4">
                                             <input
-                                                type="text"
+                                                type="password"
                                                 id="verifyConfPassword"
                                                 className="form-control"
                                                 value={confirmPassword}
