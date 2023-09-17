@@ -9,6 +9,7 @@ import ErrorPage from "./pages/ErrorPage";
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import UpdateAccount from './pages/UpdateAccount';
+import Forgot from './pages/Forgot';
 
 import Dashboard from './pages/Dashboard';
 
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/signin",
     element: <SignIn />,
+  },
+  {
+    path: "/forgot",
+    element: <Forgot />,
   },
   {
     path: "/signup",
