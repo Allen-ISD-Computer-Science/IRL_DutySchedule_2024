@@ -53,14 +53,13 @@ func routes(_ app: Application) throws {
    let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
    let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
    
-   adminProtected.get("admin") { req in
+   adminProtected.get("adminPanel") { req in
        return serveIndex(req, app)
    }
 
     protected.get("dashboard") { req in
         return serveIndex(req, app)
     }
-
    
     protected.get("index") {req -> View in
         return try await req.view.render("index.html")

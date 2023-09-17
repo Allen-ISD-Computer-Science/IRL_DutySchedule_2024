@@ -51,9 +51,11 @@ function Admin() {
 
     function loadTeachers() {
         setTeachersData(null);
-        // fetch("http://localhost:8080/api/teachers/")
-        //   .then((response) => response.json())
-        //   .then((json) => setTeachersData(json));
+        fetch("./adminPanel/data")
+          .then((response) => response.json())
+          .then((json) => setTeachersData(json));
+
+        /*
         const array = [];
         const firstNames = ["John", "Jane", "Jack", "Jill", "James", "Judy", "Jenny", "Jesse", "Jasmine", "Jasper", "Jade", "Jared", "Jocelyn", "Jude", "Jenna", "Javier"];
         const lastNames = ["Doe", "Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris"];
@@ -69,6 +71,7 @@ function Admin() {
             });
         }
         setTeachersData(array);
+        */
     }
 
     useEffect(() => {

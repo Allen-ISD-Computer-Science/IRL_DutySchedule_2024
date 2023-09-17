@@ -49,7 +49,7 @@ const router = createBrowserRouter([
     element: <UpdateAccount />,
   },
   {
-    path: "/admin",
+    path: "/adminPanel",
     element: <Admin />,
   },
   {
