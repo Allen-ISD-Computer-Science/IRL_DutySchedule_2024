@@ -26,25 +26,16 @@ func routes(_ app: Application) throws {
         return serveIndex(req, app)
     }
     
-    app.get("verify", ":token") {req in
+    app.get("updateAccount", ":token") {req in
         //let token = req.parameters.get("token")!
         //let user = try await User.query(on: req.db).filter(\.$token == token).first()
         
         //TODO: if the user is already verified, redirect to login
-        return try await req.view.render("verify.html")
+        return serveIndex(req, app)
     }
 
     app.get("forgot") {req in
-        return try await req.view.render("forgot.html")
-    }
-    
-
-   app.get("forgotpassword", ":token") {req in
-        //let token = req.parameters.get("token")!
-        //let user = try await User.query(on: req.db).filter(\.$token == token).first()
-        
-        //TODO: if the user is already verified, redirect to login
-        return try await req.view.render("forgotpassword.html")
+        return serveIndex(req, app)
     }
 
     /// START CORE SITE ENDPOINTS
