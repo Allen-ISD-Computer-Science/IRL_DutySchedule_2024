@@ -33,6 +33,14 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
+    path: "/verify",
+    element: <UpdateAccount />,
+  },
+  {
+    path: "/verify/*",
+    element: <UpdateAccount />,
+  },
+  {
     path: "/updateAccount",
     element: <UpdateAccount />,
   },

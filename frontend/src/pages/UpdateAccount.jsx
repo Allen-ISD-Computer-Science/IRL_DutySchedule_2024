@@ -12,8 +12,10 @@ function UpdateAccount() {
         const segments = new URL(window.location.href).pathname.split('/');
         const last = segments.pop() || segments.pop();
         const token = last;
+
+        const url = (new URL(window.location.href).pathname).includes("updateAccount") ? "../forgotPassword" : "./verify";
         
-        const response = await fetch("../changePassword", {
+        const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

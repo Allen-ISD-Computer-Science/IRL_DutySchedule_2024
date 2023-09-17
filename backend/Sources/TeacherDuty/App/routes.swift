@@ -25,6 +25,14 @@ func routes(_ app: Application) throws {
     app.get("signup") { req in
         return serveIndex(req, app)
     }
+
+    app.get("verify", ":token") {req in
+        //let token = req.parameters.get("token")!
+        //let user = try await User.query(on: req.db).filter(\.$token == token).first()
+        
+        //TODO: if the user is already verified, redirect to login
+        return serveIndex(req, app)
+    }
     
     app.get("updateAccount", ":token") {req in
         //let token = req.parameters.get("token")!
