@@ -151,8 +151,36 @@ struct LoginController: RouteCollection {
             return error
             
         }
+
+        routes.post("verify") { req -> CustomError in
+            try User.Verify.validate(content: req)
+            let create = try req.content.decode(User.Verify.self)
+            let token = create.token
+            guard create.password == create.confirmPassword else {
+            throw Abort(.badRequest, reason: "Passwords did not match")
+        }
+            let passwordHash = try Bcrypt.hash(create.password)
+            let user = try await User.query(on: req.db).filter(\.$token == token).first()
+            if user?.isActive == 0 {
+                try await User.query(on: req.db)
+                  .set(\.$passwordHash, to: passwordHash)
+                  .set(\.$isActive, to: 1)
+                  .filter(\.$token == token)
+                  .update()
+
+                let error = CustomError(error: "Account successfully created.")
+                return error
+            }
+            else if user?.isActive == 1 {
+                let error = CustomError(error: "Account already verified.")
+                return error
+            }
+
+            let error = CustomError(error: "Fatal Error, please try again later.")
+            return error
+        }
         
-        routes.post("changePassword") { req -> CustomError in
+        routes.post("forgotPassword") { req -> CustomError in
             try User.Verify.validate(content: req)
             let create = try req.content.decode(User.Verify.self)
             let token = create.token

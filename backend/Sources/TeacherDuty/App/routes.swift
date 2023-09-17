@@ -77,28 +77,6 @@ func routes(_ app: Application) throws {
         return users
     }
 
-    adminProtected.post("adminPanel", "removeUser") { req -> CustomError in
-        /*
-        let userRemove = try req.content.decode(User.Remove.self)
-        let userExist = try await User.query(on: req.db).filter(\.$userID == userRemove.userID).first()
-        
-        if userExist == nil{
-            let error = CustomError(error: "User Does Not Exist.")
-            return error
-        }
-        else {
-            try await userExist!.delete(force: true, on: req.db)
-            
-            let error = CustomError(error: "User Removed.")
-            return error
-            
-        }
-    
-         */
-        let error = CustomError(error: "Fatal Error, please try again later.")
-        return error
-    }
-
     protected.get("logout") { req -> Response in
         req.auth.logout(User.self)
         return req.redirect(to: "./login")
