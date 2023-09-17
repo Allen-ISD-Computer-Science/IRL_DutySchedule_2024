@@ -6,9 +6,12 @@ import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import ErrorPage from "./pages/ErrorPage";
-import Dashboard from './pages/Dashboard';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import UpdateAccount from './pages/UpdateAccount';
+
+import Dashboard from './pages/Dashboard';
+
 import Admin from './pages/Admin';
 
 const router = createBrowserRouter([
@@ -23,6 +26,14 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignUp />,
+  },
+  {
+    path: "/updateAccount",
+    element: <UpdateAccount />,
+  },
+  {
+    path: "/updateAccount/*",
+    element: <UpdateAccount />,
   },
   {
     path: "/admin",
