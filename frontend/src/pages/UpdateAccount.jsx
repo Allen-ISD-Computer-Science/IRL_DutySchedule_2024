@@ -1,38 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Button from "react-bootstrap/Button";
 
-function SignIn() {
-    const [email, setEmail] = useState("");
+function UpdateAccount() {
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    const sendLogin = async (e) => {
+    async function sendAccountVerify(e) {
         e.preventDefault();
 
-        const user = document.getElementById("signInEmail").value,
-            pass = document.getElementById("signInPassword").value;
-        const formBody = new URLSearchParams();
-        formBody.append("username", user);
-        formBody.append("password", pass);
-        const response = await fetch("./login", {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: formBody.toString(),
+        const segments = new URL(window.location.href).pathname.split('/');
+        const last = segments.pop() || segments.pop();
+        const token = last;
+        
+        const response = await fetch("../changePassword", {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: `{"password": "${password}", "confirmPassword": "${confirmPassword}", "token": "${token}"}`,
         });
-
-        response.json().then((data) => {
-            if (data.reason) {
-                alert(data.reason);
-            } else if (data.error === "Success") {
-                window.location.href = process.env.PUBLIC_URL + "/dashboard";
-            } else {
-                alert(data.error);
+    
+        response.json().then(data => {
+        //const alertString = JSON.parse(data);
+    //	console.log(data)
+        if (data.reason){
+            alert(data.reason);
+        }
+        else if (data.error){
+            if (data.error === "Account successfully created."){
+                window.location.href = "../signin";
             }
+            else if (data.error === "Account already verified."){
+                window.location.href = "../signin";
+            }
+            else {
+                alert(data.error)
+            }
+        }
         });
-    };
+    }
+
+    const initialized = useRef(false)
+
+    useEffect(() => {
+        if (!initialized.current) {
+            initialized.current = true
+
+            // if no token, alert and redirect to signin
+            const segments = new URL(window.location.href).pathname.split('/');
+            const last = segments.pop() || segments.pop();
+            const token = last;
+
+            if (!token || token === 'verify') {
+                alert("No verify token provided.");
+                window.location.href = "../signin";
+            }
+        }
+    });
 
     return (
         <section
@@ -63,32 +89,11 @@ function SignIn() {
                         <div className="col-lg-6 mb-5 mb-lg-0">
                             <div className="card">
                                 <div className="card-body py-5 px-md-5">
-                                    <form onSubmit={sendLogin}>
-                                        <div className="form-outline mb-4">
-                                            <input
-                                                type="email"
-                                                id="signInEmail"
-                                                className="form-control"
-                                                value={email}
-                                                onChange={(e) =>
-                                                    setEmail(
-                                                        e.currentTarget.value
-                                                    )
-                                                }
-                                                required
-                                            />
-                                            <label
-                                                className="form-label"
-                                                htmlFor="signInEmail"
-                                            >
-                                                Email address
-                                            </label>
-                                        </div>
-
+                                    <form onSubmit={sendAccountVerify}>
                                         <div className="form-outline mb-4">
                                             <input
                                                 type="password"
-                                                id="signInPassword"
+                                                id="verifyPassword"
                                                 className="form-control"
                                                 value={password}
                                                 onChange={(e) =>
@@ -100,9 +105,30 @@ function SignIn() {
                                             />
                                             <label
                                                 className="form-label"
-                                                htmlFor="signInPassword"
+                                                htmlFor="verifyPassword"
                                             >
                                                 Password
+                                            </label>
+                                        </div>
+
+                                        <div className="form-outline mb-4">
+                                            <input
+                                                type="password"
+                                                id="verifyConfPassword"
+                                                className="form-control"
+                                                value={confirmPassword}
+                                                onChange={(e) =>
+                                                    setConfirmPassword(
+                                                        e.currentTarget.value
+                                                    )
+                                                }
+                                                required
+                                            />
+                                            <label
+                                                className="form-label"
+                                                htmlFor="verifyConfPassword"
+                                            >
+                                                Confirm Password
                                             </label>
                                         </div>
 
@@ -111,29 +137,13 @@ function SignIn() {
                                             className="btn-block mb-4"
                                             type="submit"
                                         >
-                                            Sign In
+                                            Register
                                         </Button>
 
-                                        <div className="row">
-                                            <div className="col text-center">
-                                                <p>Don't have an account?</p>
-                                                <a href="./signup">Sign Up</a>
-                                            </div>
-
-                                            <div className="col text-center">
-                                                <p>Can't remember your password?</p>
-                                                <a href="./forgot">Forgot Password</a>
-                                            </div>
+                                        <div className="text-center">
+                                            <p>Already have an account?</p>
+                                            <a href="./signin">Sign In</a>
                                         </div>
-
-                                        {/*
-                        <div className="text-center">
-                            <p>or sign in with:</p>
-                            <button type="button" className="btn btn-link btn-floating mx-1">
-                                <FontAwesomeIcon icon={faGoogle} />
-                            </button>
-                            </div>
-					 */}
                                     </form>
                                 </div>
                             </div>
@@ -145,4 +155,4 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default UpdateAccount;
