@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/vapor/muqadam-sabir/static/css/main.bfbcb657.css",
-    "main.js": "/vapor/muqadam-sabir/static/js/main.92bbeccd.js",
+    "main.js": "/vapor/muqadam-sabir/static/js/main.490e8867.js",
     "index.html": "/vapor/muqadam-sabir/index.html",
     "main.bfbcb657.css.map": "/vapor/muqadam-sabir/static/css/main.bfbcb657.css.map",
-    "main.92bbeccd.js.map": "/vapor/muqadam-sabir/static/js/main.92bbeccd.js.map"
+    "main.490e8867.js.map": "/vapor/muqadam-sabir/static/js/main.490e8867.js.map"
   },
   "entrypoints": [
     "static/css/main.bfbcb657.css",
-    "static/js/main.92bbeccd.js"
+    "static/js/main.490e8867.js"
   ]
 }

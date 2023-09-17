@@ -66,12 +66,7 @@ func routes(_ app: Application) throws {
     }
     
     adminProtected.get("adminPanel", "data") { req -> [User] in
-        let users = try await User.query(on: req.db)
-          .field(\.$id)
-          .field(\.$firstName)
-          .field(\.$lastName)
-          .field(\.$email)
-          .all()
+        let users = try await User.query(on: req.db).all()
         return users
     }
 
