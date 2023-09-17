@@ -3,7 +3,7 @@ import Fluent
 import FluentMySQLDriver
 import Crypto
 
-final class Contexts: Model, Content {
+final class Context: Model, Content {
     static let schema = "Contexts"
 
     @ID(custom: "id", generatedBy: .database)
@@ -14,7 +14,10 @@ final class Contexts: Model, Content {
 
     @Field(key: "name")
     var name: String
-   
+
+    @Field(key: "supplementaryJSON")
+    var supplementaryJSON: Data
+
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)
     var creationTimestamp: Date?
     
@@ -22,12 +25,4 @@ final class Contexts: Model, Content {
     var modificationTimestamp: Date?
 
     init() { }
-
-    init(id: Int? = nil, externalID: UUID? = nil, name: String, creationTimestamp: Date? = nil, modifcationTimestamp: Date? = nil) {
-        self.id = id
-        self.externalID = externalID
-        self.name = name
-        self.creationTimestamp = creationTimestamp
-        self.modificationTimestamp = modifcationTimestamp
-    }
 }
