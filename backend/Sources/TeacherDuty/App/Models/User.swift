@@ -62,6 +62,12 @@ extension User {
         var email: String
     }
 
+    struct Patch: Decodable {
+        var firstName: String?
+        var lastName: String?
+        var email: String?
+    }
+        
     struct Verify: Content{
         var password: String
         var confirmPassword : String

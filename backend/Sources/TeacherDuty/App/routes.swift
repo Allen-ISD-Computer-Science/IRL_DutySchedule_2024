@@ -70,6 +70,31 @@ func routes(_ app: Application) throws {
         return users
     }
 
+    
+    adminProtected.patch("adminPanel", ":id") { req async throws -> User in 
+        // Decode the request data.
+        let patch = try req.content.decode(User.Patch.self)
+        // Fetch the desired user from the database.
+        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
+        throw Abort(.notFound)
+    }
+        // If first name was supplied, update it.
+        if let firstName = patch.firstName {
+            user.firstName = firstName
+        }
+        // If new last name was supplied, update it.
+        if let lastName = patch.lastName {
+            user.lastName = lastName
+        }
+        // If new last name was supplied, update it.
+        if let email = patch.email {
+            user.email = email
+        }
+        // Save the user and return it.
+        try await user.save(on: req.db)
+        return user
+    }
+    
     protected.get("logout") { req -> Response in
         req.auth.logout(User.self)
         return req.redirect(to: "./login")
