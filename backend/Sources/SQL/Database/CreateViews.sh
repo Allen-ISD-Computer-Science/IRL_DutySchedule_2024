@@ -18,17 +18,6 @@ set -eu
 # Assumes mysql starts using configuration file with credentials
 cat SelectDatabase.sql \
     \
-    ../Tables/Contexts.sql \
-    ../Tables/Roles.sql \
-    ../Tables/Users.sql \
-    ../Tables/Duties.sql \
-    ../Tables/Locations.sql \
-    ../Tables/Positions.sql \
-    ../Tables/Days.sql \
-    ../Tables/Shifts.sql \
-    ../Tables/UserShifts.sql \
-    ../Tables/UserShiftChangeRequests.sql \
-    ../Tables/Availability.sql \
-    ../Tables/UserAvailability.sql \
-    ../Tables/UserAuthentication.sql | mysql
-
+    ../Views/RolesView.sql \
+    ../Views/UserShiftsView.sql \
+    ../Views/UsersView.sql | mysql
