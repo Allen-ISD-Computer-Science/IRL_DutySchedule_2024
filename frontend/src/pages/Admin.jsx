@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Table, Button, Container } from 'react-bootstrap';
 
@@ -40,6 +41,18 @@ function Admin() {
                             // todo: send api request to update data
                             // avaliable: teachersData[e.target.parentElement.parentElement.dataset.index].id,
                             //            key: event.target.name, value: event.target.value
+
+			    const obj = {}
+			    obj[e.target.name] = e.target.value;
+
+			    fetch("./adminPanel/" + teachersData[e.target.parentElement.parentElement.dataset.index].id, {
+				headers: {
+				    Accept: "application/json",
+				    "Content-Type": "application/json",
+				},
+				method: "PATCH",
+				body: JSON.stringify(obj)
+			    })
                         }
                     }}
                     onFocus={(e) => { setDidChange(false); }}
@@ -96,9 +109,9 @@ function Admin() {
                             </thead>
                             <tbody>
                                 { teachersData &&
-                                    teachersData.map(data => {
+                                  teachersData.map((data, i) => {
                                         return (
-                                            <tr className='align-middle' data-index={data.id - 1}>
+                                            <tr className='align-middle' data-index={i}>
                                                 <td>{data.id}</td>
                                                 { editableCell('firstName', data.firstName) }
                                                 { editableCell('lastName', data.lastName) }
