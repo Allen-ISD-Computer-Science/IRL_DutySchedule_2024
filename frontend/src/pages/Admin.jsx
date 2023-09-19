@@ -175,7 +175,7 @@ function Admin() {
 		<Modal.Body className="text-center">
 		    <h4>{changeProp.replace("Name", " Name")}</h4>
 		    <p>
-			{changePropFrom} -> {changePropTo}
+			{changePropFrom} <b>🡆</b> {changePropTo}
 		    </p>
 		</Modal.Body>
 		<Modal.Footer>
