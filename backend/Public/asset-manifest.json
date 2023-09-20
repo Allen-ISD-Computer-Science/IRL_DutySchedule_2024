@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/vapor/muqadam-sabir/static/css/main.bfbcb657.css",
+    "main.js": "/vapor/muqadam-sabir/static/js/main.de5f01b5.js",
+    "index.html": "/vapor/muqadam-sabir/index.html",
+    "main.bfbcb657.css.map": "/vapor/muqadam-sabir/static/css/main.bfbcb657.css.map",
+    "main.de5f01b5.js.map": "/vapor/muqadam-sabir/static/js/main.de5f01b5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bfbcb657.css",
+    "static/js/main.de5f01b5.js"
+  ]
+}

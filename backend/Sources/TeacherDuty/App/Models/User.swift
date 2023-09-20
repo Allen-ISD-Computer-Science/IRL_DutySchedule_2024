@@ -10,7 +10,7 @@ final class User: Model, Content {
     var id: Int?
 
     @ID(custom: "externalID", generatedBy: .database)
-    var externalID: Int?
+    var externalID: UUID?
     
     @Field(key: "firstName")
     var firstName: String
@@ -22,7 +22,7 @@ final class User: Model, Content {
     var email: String
 
     @Field(key: "password_hash")
-    var passwordHash: String?
+    var passwordHash: String
 
     @Field(key: "accessToken")
     var token: String?
@@ -40,12 +40,13 @@ final class User: Model, Content {
     var isAdmin: Int
 
     @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    var supplementaryJSON: Availability?
 
     init() { }
 
-    init(id: Int? = nil, firstName: String, lastName: String, email: String, passwordHash: String? = nil, token: String? = nil, isActive: Int = 0, updatedAt: Date? = nil, forgotMailSentAt: Date? = nil, isAdmin: Int = 0, supplementaryJSON: Data) {
+    init(id: Int? = nil, externalID: UUID? = nil, firstName: String, lastName: String, email: String, passwordHash: String, token: String? = nil, isActive: Int = 0, updatedAt: Date? = nil, forgotMailSentAt: Date? = nil, isAdmin: Int = 0, supplementaryJSON: Availability? = nil) {
         self.id = id
+        self.externalID = externalID
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
@@ -58,7 +59,9 @@ final class User: Model, Content {
         self.supplementaryJSON = supplementaryJSON
     }
 
-    
+    struct Availability : Content{
+        var periods: [Int?]
+    }
        
 }
 
