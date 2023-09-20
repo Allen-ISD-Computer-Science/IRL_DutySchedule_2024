@@ -44,7 +44,7 @@ function SignUp() {
                             <h1 className="my-5 display-3 fw-bold ls-tight">
                                 Allen High School <br />
                                 <span className="text-primary">
-                                    Conferences App
+				    Duty Dashboard
                                 </span>
                             </h1>
                             <p style={{ color: "hsl(217, 10%, 50.8%)" }}>
