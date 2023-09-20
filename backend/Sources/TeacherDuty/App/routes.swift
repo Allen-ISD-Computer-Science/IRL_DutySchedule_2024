@@ -70,8 +70,7 @@ func routes(_ app: Application) throws {
         return users
     }
 
-    
-    adminProtected.patch("adminPanel", ":id") { req async throws -> User in 
+    adminProtected.patch("adminPanel", "updateUser", ":id") { req async throws -> User in 
         // Decode the request data.
         let patch = try req.content.decode(User.Patch.self)
         // Fetch the desired user from the database.
