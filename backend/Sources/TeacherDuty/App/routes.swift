@@ -93,6 +93,14 @@ func routes(_ app: Application) throws {
         try await user.save(on: req.db)
         return user
     }
+
+    protected.get("userPermission") { req -> Int in
+        let user = try req.auth.require(User.self)
+        if user != nil {
+            return user.isAdmin
+        }
+        return 0
+    }
     
     protected.get("logout") { req -> Response in
         req.auth.logout(User.self)
