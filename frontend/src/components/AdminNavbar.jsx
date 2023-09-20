@@ -6,7 +6,7 @@ function AdminNavbarComponent() {
   return (
     <Navbar bg="primary" data-bs-theme="dark">
         <Container>
-            <Navbar.Brand href="/admin">AHS Conferences | Admin</Navbar.Brand>
+            <Navbar.Brand href="./adminPanel">AHS DutyDashboard | Admin</Navbar.Brand>
             <Nav className="me-auto">
                 <Nav.Link href="#">Home</Nav.Link>
             </Nav>
