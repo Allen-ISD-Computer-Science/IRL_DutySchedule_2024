@@ -9,6 +9,9 @@ final class User: Model, Content {
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
 
+    @ID(custom: "externalID", generatedBy: .database)
+    var externalID: Int?
+    
     @Field(key: "firstName")
     var firstName: String
 
@@ -19,7 +22,7 @@ final class User: Model, Content {
     var email: String
 
     @Field(key: "password_hash")
-    var passwordHash: String
+    var passwordHash: String?
 
     @Field(key: "accessToken")
     var token: String?
@@ -36,9 +39,12 @@ final class User: Model, Content {
     @Field(key: "isAdmin")
     var isAdmin: Int
 
+    @Field(key: "supplementaryJSON")
+    var supplementaryJSON: Data
+
     init() { }
 
-    init(id: Int? = nil, firstName: String, lastName: String, email: String, passwordHash: String, token: String? = nil, isActive: Int = 0, updatedAt: Date? = nil, forgotMailSentAt: Date? = nil, isAdmin: Int = 0) {
+    init(id: Int? = nil, firstName: String, lastName: String, email: String, passwordHash: String? = nil, token: String? = nil, isActive: Int = 0, updatedAt: Date? = nil, forgotMailSentAt: Date? = nil, isAdmin: Int = 0, supplementaryJSON: Data) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -49,6 +55,7 @@ final class User: Model, Content {
         self.updatedAt = updatedAt
         self.forgotMailSentAt = forgotMailSentAt
         self.isAdmin = isAdmin
+        self.supplementaryJSON = supplementaryJSON
     }
 
     
