@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 
-import Navbar from '../components/Navbar'
-import Calendar from '../components/Calendar';
+import Navbar from '../../components/Navbar'
+import Calendar from '../../components/Calendar';
 
-export default function DashboardPage() {
+function CalendarPage() {
   return (
     <main className="fullPage" style={{ backgroundColor: "hsl(0, 0%, 96%)" }}>
         <Navbar />
@@ -19,3 +19,5 @@ export default function DashboardPage() {
     </main>
   );
 }
+
+export default CalendarPage;

@@ -20,10 +20,11 @@ function NavbarComponent() {
         <Container>
             <Navbar.Brand href="./dashboard">AHS DutyDashboard</Navbar.Brand>
             <Nav className="me-auto">
-                <Nav.Link href="#">Home</Nav.Link>
+                <Nav.Link href="./dashboard">Dashboard</Nav.Link>
+                <Nav.Link href="./calendar">Calendar</Nav.Link>
             </Nav>
 
-	    <Nav className="ml-auto" style={{display: showAdmin ? "block" : "none"}}>
+	        <Nav className="ml-auto" style={{display: showAdmin ? "block" : "none"}}>
                 <Nav.Link href="./adminPanel">Admin</Nav.Link>
             </Nav>
         </Container>

@@ -11,9 +11,11 @@ import SignUp from './pages/SignUp';
 import UpdateAccount from './pages/UpdateAccount';
 import Forgot from './pages/Forgot';
 
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/authRequired/Dashboard';
+import Calendar from './pages/authRequired/Calendar';
 
-import Admin from './pages/Admin';
+import Admin from './pages/adminRequired/Admin';
+import Upload from './pages/adminRequired/Upload';
 
 const router = createBrowserRouter([
   {
@@ -49,12 +51,20 @@ const router = createBrowserRouter([
     element: <UpdateAccount />,
   },
   {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/calendar",
+    element: <Calendar />,
+  },
+  {
     path: "/adminPanel",
     element: <Admin />,
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />,
+    path: "/adminPanel/upload",
+    element: <Upload />,
   },
 ],
 {

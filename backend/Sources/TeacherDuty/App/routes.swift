@@ -52,12 +52,12 @@ func routes(_ app: Application) throws {
    let sessions = app.grouped([User.sessionAuthenticator(), User.customAuthenticator()])
    let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
    let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
-   
-   adminProtected.get("adminPanel") { req in
-       return serveIndex(req, app)
-   }
 
     protected.get("dashboard") { req in
+        return serveIndex(req, app)
+    }
+
+    protected.get("calendar") { req in
         return serveIndex(req, app)
     }
    
@@ -65,6 +65,10 @@ func routes(_ app: Application) throws {
         return try await req.view.render("index.html")
     }
     
+   adminProtected.get("adminPanel") { req in
+       return serveIndex(req, app)
+   }
+
     adminProtected.get("adminPanel", "data") { req -> [User] in
         let users = try await User.query(on: req.db).all()
         return users

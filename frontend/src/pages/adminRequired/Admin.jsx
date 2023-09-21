@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Table, Button, Container, Modal } from 'react-bootstrap';
 
-import AdminNavbar from '../components/AdminNavbar'
+import AdminNavbar from '../../components/AdminNavbar'
 
 function Admin() {
     const [origData, setOrigData] = useState(null);
