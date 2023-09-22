@@ -65,11 +65,13 @@ func routes(_ app: Application) throws {
         return try await req.view.render("index.html")
     }
     
-   adminProtected.get("adminPanel") { req in
-       return serveIndex(req, app)
-   }
+    adminProtected.get("adminPanel") { req in
+        return serveIndex(req, app)
+    }
 
-   
+    adminProtected.get("adminPanel", "upload") { req in
+       return serveIndex(req, app)
+    }
    
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)

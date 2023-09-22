@@ -123,7 +123,7 @@ function Admin() {
 
     return (
         <main className="fullPage" style={{ backgroundColor: "hsl(0, 0%, 96%)" }}>
-            <AdminNavbar />
+            <AdminNavbar selected="home" />
             <section className="d-flex align-items-center">
                 <div className="w-100 px-4 py-5 px-md-5 text-center text-lg-start">
                     <Container>
