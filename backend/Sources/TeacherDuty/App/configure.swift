@@ -2,6 +2,7 @@ import Vapor
 import Leaf
 import Fluent
 import FluentMySQLDriver
+import MultipartKit
 
 func configure(_ app: Application) throws {
     
