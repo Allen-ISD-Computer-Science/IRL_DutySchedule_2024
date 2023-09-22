@@ -11,7 +11,7 @@ function Upload() {
             <section className="d-flex align-items-center">
                 <div className="w-100 px-4 py-5 px-md-5 text-center text-lg-start">
                     <Container>
-                        <Form action='./upload'>
+                        <Form action='./upload' method="POST" enctype="multipart/form-data">
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <Form.Label>CSV File</Form.Label>
                                 <Form.Control type="file" placeholder="Select file" accept='.csv' />
