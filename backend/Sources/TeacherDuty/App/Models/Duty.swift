@@ -24,10 +24,10 @@ final class Duty: Model, Content {
     @Field(key: "supplementaryJSON")
     var supplementaryJSON: Data
 
-    @Timestamp(key: "creationTimestamp", on: .create, format: .default)
+    @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
     
-    @Timestamp(key: "modifcationTimestamp", on: .update, format: .default)
+    @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
 
     init() { }

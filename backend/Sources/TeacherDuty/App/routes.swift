@@ -48,11 +48,15 @@ func routes(_ app: Application) throws {
 
     /// START CORE SITE ENDPOINTS
     
-   // Create protected route group which requires user auth. 
-   let sessions = app.grouped([User.sessionAuthenticator(), User.customAuthenticator()])
-   let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
-   let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
-   
+    // Create protected route group which requires user auth.
+    let sessions = app.grouped([User.sessionAuthenticator(), User.credentialsAuthenticator()])
+    let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
+    let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
+
+    adminProtected.get("adminPanel") { req in
+        return serveIndex(req, app)
+    }
+
     protected.get("dashboard") { req in
         return serveIndex(req, app)
     }
@@ -60,7 +64,7 @@ func routes(_ app: Application) throws {
     protected.get("calendar") { req in
         return serveIndex(req, app)
     }
-   
+
     protected.get("index") {req -> View in
         return try await req.view.render("index.html")
     }
@@ -75,8 +79,8 @@ func routes(_ app: Application) throws {
    
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)
-        if user != nil {
-            return user.isAdmin
+        if user != nil { //TODO FIX!
+            return 1
         }
         return 0
     }

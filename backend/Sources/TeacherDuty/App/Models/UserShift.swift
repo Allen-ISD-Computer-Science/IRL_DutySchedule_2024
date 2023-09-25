@@ -24,7 +24,7 @@ final class UserShift: Model, Content {
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
     
-    @Timestamp(key: "modifcationTimestamp", on: .update)
+    @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
 
     init() { }

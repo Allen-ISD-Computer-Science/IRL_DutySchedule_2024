@@ -4,63 +4,55 @@ import FluentMySQLDriver
 import Crypto
 
 final class User: Model, Content {
-    static let schema = "users"
+    static let schema = "Users"
 
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
 
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
-    
+
+    @Parent(key: "roleID")
+    var role: Role
+
     @Field(key: "firstName")
     var firstName: String
 
     @Field(key: "lastName")
     var lastName: String
     
-    @Field(key: "email")
+    @Field(key: "emailAddress")
     var email: String
 
-    @Field(key: "password_hash")
-    var passwordHash: String
+    @Children(for: \.$user)
+    var authenticators: [UserAuthentication]
 
-    @Field(key: "accessToken")
-    var token: String?
+    @Timestamp(key: "creationTimestamp", on: .create)
+    var creationTimestamp: Date?
 
-    @Field(key: "isActive")
-    var isActive: Int
-
-    @Timestamp(key: "updatedAt", on: .update, format: .default)
-    var updatedAt: Date?
-    
-    @Timestamp(key: "forgotMailSentAt", on: .update, format: .default)
-    var forgotMailSentAt: Date?
-
-    @Field(key: "isAdmin")
-    var isAdmin: Int
+    @Timestamp(key: "modificationTimestamp", on: .update)
+    var modificationTimestamp: Date?
 
     @Field(key: "supplementaryJSON")
     var supplementaryJSON: Availability?
 
     init() { }
 
-    init(id: Int? = nil, externalID: UUID? = nil, firstName: String, lastName: String, email: String, passwordHash: String, token: String? = nil, isActive: Int = 0, updatedAt: Date? = nil, forgotMailSentAt: Date? = nil, isAdmin: Int = 0, supplementaryJSON: Availability? = nil) {
-        self.id = id
-        self.externalID = externalID
-        self.firstName = firstName
-        self.lastName = lastName
-        self.email = email
-        self.passwordHash = passwordHash
-        self.token = token
-        self.isActive = isActive
-        self.updatedAt = updatedAt
-        self.forgotMailSentAt = forgotMailSentAt
-        self.isAdmin = isAdmin
-        self.supplementaryJSON = supplementaryJSON
-    }
-
     struct Availability : Content{
         var periods: [Int?]
+    }
+
+    func hasPassword() -> Bool {
+        return authenticators.contains(where: { $0.isPasswordActive() })
+    }
+
+    func getPasswordAuthenticator(returnNullableToken: Bool = false) -> UserAuthentication? {
+        return authenticators.first(where: { returnNullableToken ? $0.isPassword() : $0.isPasswordActive() })
+    }
+
+    public static func query(on database: Database) -> QueryBuilder<User> {
+        return QueryBuilder(database: database)
+          .with(\.$authenticators)
     }
        
 }
@@ -107,25 +99,6 @@ extension User.Verify: Validatable{
     }
 }
 
-extension User: ModelAuthenticatable {
-    static let usernameKey = \User.$email 
-    static let passwordHashKey = \User.$passwordHash
-    
-    func verify(email: String) throws -> Bool {
-        if (email == self.email){
-            return true
-        }
-        else {
-            return false
-        }
-    }
-     
-    func verify(password: String) throws -> Bool {
-        try Bcrypt.verify(password, created: self.passwordHash)
-        
-    }
-}
-
 extension User: SessionAuthenticatable {
     var sessionID: Int?
     {
@@ -136,5 +109,3 @@ extension User: SessionAuthenticatable {
 
 // Make login sessionable
 extension User: ModelSessionAuthenticatable { }
-extension User: ModelCustomAuthenticatable {}
-

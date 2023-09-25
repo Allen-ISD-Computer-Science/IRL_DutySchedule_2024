@@ -5,6 +5,7 @@ import Crypto
 
 final class UserAuthentication: Model, Content {
     static let schema = "UserAuthentication"
+    typealias JSONData = [String: String]
 
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
@@ -15,7 +16,7 @@ final class UserAuthentication: Model, Content {
     @Parent(key: "userID")
     var user: User
 
-    @OptionalField(key: "token")
+    @Field(key: "token")
     var token: String?
 
     @OptionalField(key: "resetToken")
@@ -25,13 +26,21 @@ final class UserAuthentication: Model, Content {
     var resetTimestamp: Date?
 
     @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    var supplementaryJSON: JSONData
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
     
-    @Timestamp(key: "modifcationTimestamp", on: .update)
+    @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
+
+    func isPasswordActive() -> Bool {
+        return isPassword() && token != nil
+    }
+
+    func isPassword() -> Bool {
+        return supplementaryJSON.isEmpty
+    }
 
     init() { }
 

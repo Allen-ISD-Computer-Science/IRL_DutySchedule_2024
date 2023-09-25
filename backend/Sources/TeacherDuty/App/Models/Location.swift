@@ -24,7 +24,7 @@ final class Location: Model, Content {
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)
     var creationTimestamp: Date?
     
-    @Timestamp(key: "modifcationTimestamp", on: .update, format: .default)
+    @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
 
     init() { }
