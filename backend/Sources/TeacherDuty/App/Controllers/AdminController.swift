@@ -4,7 +4,7 @@ import MultipartKit
 
 struct AdminController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let sessions = app.grouped([User.sessionAuthenticator(), User.customAuthenticator()])
+        let sessions = app.grouped([User.sessionAuthenticator(), User.credentialsAuthenticator()])
         let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
         
 
