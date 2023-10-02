@@ -22,7 +22,7 @@ CREATE TABLE Availability (
     contextID INT NOT NULL,
     
     dayID INT NOT NULL,
-    supplementaryJSON JSON NOT NULL DEFAULT ("{}"),
+    supplementaryJSON JSON NULL DEFAULT NULL,
 
     startTime TIME NOT NULL,
     endTime TIME NOT NULL,

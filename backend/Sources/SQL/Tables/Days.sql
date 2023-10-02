@@ -22,7 +22,7 @@ CREATE TABLE Days (
     contextID INT NOT NULL,
 
     day DATE NOT NULL,
-    supplementaryJSON JSON NOT NULL DEFAULT ('{}'),
+    supplementaryJSON JSON NULL DEFAULT NULL,
 
     dayOfWeek INT AS (DAYOFWEEK(day)),  -- 1=Sunday ... 7=Saturday
 

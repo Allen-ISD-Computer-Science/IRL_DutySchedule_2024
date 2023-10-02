@@ -22,7 +22,7 @@ CREATE TABLE Positions (
     
     dutyID INT NOT NULL,
     locationID INT NOT NULL,
-    supplementaryJSON JSON NOT NULL DEFAULT ('{}'),
+    supplementaryJSON JSON NULL DEFAULT NULL,
     
     creationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modificationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

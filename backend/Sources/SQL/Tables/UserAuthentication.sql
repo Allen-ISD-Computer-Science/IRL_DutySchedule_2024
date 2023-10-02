@@ -26,7 +26,7 @@ CREATE TABLE UserAuthentication (
     resetToken varchar(64) NULL DEFAULT NULL,
     resetTimestamp DATETIME NULL DEFAULT NULL,
 
-    supplementaryJSON JSON NOT NULL DEFAULT ('{}'),
+    supplementaryJSON JSON NULL DEFAULT NULL,
 
     creationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modificationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
