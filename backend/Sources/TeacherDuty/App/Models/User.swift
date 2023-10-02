@@ -49,11 +49,6 @@ final class User: Model, Content {
     func getPasswordAuthenticator(returnNullableToken: Bool = false) -> UserAuthentication? {
         return authenticators.first(where: { returnNullableToken ? $0.isPassword() : $0.isPasswordActive() })
     }
-
-    public static func query(on database: Database) -> QueryBuilder<User> {
-        return QueryBuilder(database: database)
-          .with(\.$authenticators)
-    }
        
 }
 

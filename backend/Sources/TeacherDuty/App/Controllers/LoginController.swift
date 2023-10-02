@@ -26,7 +26,7 @@ struct LoginController: RouteCollection {
             }
 
             // CHECK IF A USER WITH THAT EMAIL ALREADY EXISTS
-            let userExist = try await User.query(on: req.db).filter(\.$email == create.email).first()
+            let userExist = try await User.query(on: req.db).filter(\.$email == create.email).with(\.$authenticators).first()
 
             // IF A USER WITH THAT EMAIL DOESNT ALREADY EXIST CREATE NEW USER
             if let user = userExist {
@@ -74,7 +74,7 @@ struct LoginController: RouteCollection {
             try User.Email.validate(content: req)
             let create = try req.content.decode(User.Email.self)
             
-            guard let user = try await User.query(on: req.db).filter(\.$email == create.email).first(), user.hasPassword() else {
+            guard let user = try await User.query(on: req.db).filter(\.$email == create.email).with(\.$authenticators).first(), user.hasPassword() else {
                 return LoginError(error: "User does not exist. Check the email and try again.")
             }
 

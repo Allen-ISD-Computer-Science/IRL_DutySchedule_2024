@@ -22,6 +22,7 @@ private struct UserCredentialsAuthenticator: CredentialsAuthenticator {
   ) -> EventLoopFuture<Void> { // Dont know why async authenticators dont work?
     User.query(on: request.db(self.database))
       .filter(\.$email == credentials.username)
+      .with(\.$authenticators)
       .first()
       .flatMapThrowing { foundUser in
         guard let user = foundUser else {
