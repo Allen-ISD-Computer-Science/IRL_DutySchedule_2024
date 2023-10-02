@@ -22,7 +22,7 @@ final class Day: Model, Content {
     var dayOfWeek: Int?
 
     @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    var supplementaryJSON: DayType?
    
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
@@ -31,4 +31,8 @@ final class Day: Model, Content {
     var modificationTimestamp: Date?
 
     init() { }
+
+    struct DayType : Content {
+        var abDay : String?
+    }
 }
