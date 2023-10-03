@@ -1,0 +1,3 @@
+#Ignore React builds.
+Public/static/
+Resources/Views/index.html
