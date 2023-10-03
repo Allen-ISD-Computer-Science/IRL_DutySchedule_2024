@@ -25,8 +25,25 @@ struct AdminController: RouteCollection {
             throw Abort(.badRequest, reason: "CSV file not found in request")
         }
 
-        adminProtected.get("adminPanel", "data") { req -> [User] in
-            let users = try await User.query(on: req.db).all()
+        struct AdminData : Content {
+            var id : Int?
+            var firstName : String
+            var lastName : String
+            var email : String
+            var supplementaryJSON : User.Availability
+        }
+        adminProtected.get("adminPanel", "data") { req -> [AdminData] in
+            let authUser = try req.auth.require(User.self)
+            let users = try await User.query(on: req.db)
+              .field(\.$id)
+              .field(\.$firstName)
+              .field(\.$lastName)
+              .field(\.$email)
+              .field(\.$supplementaryJSON)
+              .all()
+              .map { user in
+                  AdminData.init(id: user.id!, firstName: user.firstName, lastName: user.lastName, email: user.email, supplementaryJSON: user.supplementaryJSON ?? User.Availability.init(periods: authUser.periodsDefault))
+              }
             return users
         }
 

@@ -38,6 +38,7 @@ final class User: Model, Content {
 
     init() { }
 
+    let periodsDefault = [Int](repeating: 0, count: 1)
     struct Availability : Content{
         var periods: [Int?]
     }
