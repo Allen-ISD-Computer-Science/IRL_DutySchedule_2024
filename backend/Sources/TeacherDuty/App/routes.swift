@@ -61,22 +61,30 @@ func routes(_ app: Application) throws {
         return serveIndex(req, app)
     }
 
-    struct CalendarData : Content {
+    struct CalendarDataRes : Content {
         var day : Date
         var dayOfWeek: Int?
         var supplementaryJSON : Day.DayType
     }
+
+    struct CalendarDataReq : Content {
+        var from: Date
+        var through: Date
+    }
     
-    protected.get("calendar", "data") { req async throws -> [CalendarData] in
+    protected.post("calendar", "data") { req async throws -> [CalendarDataRes] in
         let user = try req.auth.require(User.self)
+        let calendarDataReq = try req.content.decode(CalendarDataReq.self)
         if user != nil {
             let days = try await Day.query(on: req.db)
+              .filter(\.$day >= calendarDataReq.from)
+              .filter(\.$day <= calendarDataReq.through)
               .field(\.$day)
               .field(\.$dayOfWeek)
               .field(\.$supplementaryJSON)
               .all()
               .map { day in
-                  CalendarData.init(day: day.day, dayOfWeek: day.dayOfWeek!, supplementaryJSON: day.supplementaryJSON!)
+                  CalendarDataRes.init(day: day.day, dayOfWeek: day.dayOfWeek!, supplementaryJSON: day.supplementaryJSON!)
               }
             
             return days

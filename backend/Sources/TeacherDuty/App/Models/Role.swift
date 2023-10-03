@@ -15,6 +15,7 @@ final class Role: Model, Content {
         return role
     }
 
+    
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
 
