@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/vapor/muqadam-sabir/static/css/main.ba9eb4fb.css",
-    "main.js": "/vapor/muqadam-sabir/static/js/main.462aa364.js",
-    "index.html": "/vapor/muqadam-sabir/index.html",
-    "main.ba9eb4fb.css.map": "/vapor/muqadam-sabir/static/css/main.ba9eb4fb.css.map",
-    "main.462aa364.js.map": "/vapor/muqadam-sabir/static/js/main.462aa364.js.map"
+    "main.css": "/vapor/ryan-hallock/static/css/main.ba9eb4fb.css",
+    "main.js": "/vapor/ryan-hallock/static/js/main.82bf1585.js",
+    "index.html": "/vapor/ryan-hallock/index.html",
+    "main.ba9eb4fb.css.map": "/vapor/ryan-hallock/static/css/main.ba9eb4fb.css.map",
+    "main.82bf1585.js.map": "/vapor/ryan-hallock/static/js/main.82bf1585.js.map"
   },
   "entrypoints": [
     "static/css/main.ba9eb4fb.css",
-    "static/js/main.462aa364.js"
+    "static/js/main.82bf1585.js"
   ]
 }

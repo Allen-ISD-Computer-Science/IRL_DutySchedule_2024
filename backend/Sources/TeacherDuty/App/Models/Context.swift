@@ -15,8 +15,8 @@ final class Context: Model, Content {
     @Field(key: "name")
     var name: String
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)
     var creationTimestamp: Date?

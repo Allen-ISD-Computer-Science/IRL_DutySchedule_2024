@@ -5,17 +5,23 @@ import Crypto
 
 final class Role: Model, Content {
     static let schema = "Roles"
-    typealias JSONData = [String: String]
 
-    static func defaultRole(on database: Database) async throws -> Role {
-        guard let role = try await Role.query(on: database).all().first(where: { $0.supplementaryJSON["default"] != nil }) else {
-            throw Abort(.internalServerError, reason: "Failed when locating default role.")
+    private static func getFirstRoleSK(key: Key, on database: Database) async throws -> Role {
+        guard let role = try await Role.query(on: database).all().first(where: { $0.supplementaryJSON?.has(key) ?? false }) else {
+            throw Abort(.internalServerError, reason: "Failed when locating role with \(key).")
         }
 
         return role
     }
 
-    
+    static func defaultRole(on database: Database) async throws -> Role {
+        return try await getFirstRoleSK(key: "default", on: database)
+    }
+
+    static func adminRole(on database: Database) async throws -> Role {
+        return try await getFirstRoleSK(key: "admin", on: database)
+    }
+
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
 
@@ -28,8 +34,8 @@ final class Role: Model, Content {
     @Field(key: "role")
     var role: String
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: [String: String]
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)
     var creationTimestamp: Date?

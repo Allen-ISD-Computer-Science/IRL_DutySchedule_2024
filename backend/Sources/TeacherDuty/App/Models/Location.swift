@@ -20,7 +20,10 @@ final class Location: Model, Content {
 
     @Field(key: "description")
     var description: String
-   
+
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
+
     @Timestamp(key: "creationTimestamp", on: .create, format: .default)
     var creationTimestamp: Date?
     

@@ -24,8 +24,8 @@ final class Shift: Model, Content {
     @Field(key: "endTime")
     var end: Date
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?

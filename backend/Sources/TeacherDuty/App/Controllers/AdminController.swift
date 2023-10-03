@@ -30,7 +30,7 @@ struct AdminController: RouteCollection {
             var firstName : String
             var lastName : String
             var email : String
-            var supplementaryJSON : User.Availability
+            var supplementaryJSON : User.Availability?
         }
         adminProtected.get("adminPanel", "data") { req -> [AdminData] in
             let authUser = try req.auth.require(User.self)
@@ -42,7 +42,7 @@ struct AdminController: RouteCollection {
               .field(\.$supplementaryJSON)
               .all()
               .map { user in
-                  AdminData.init(id: user.id!, firstName: user.firstName, lastName: user.lastName, email: user.email, supplementaryJSON: user.supplementaryJSON ?? User.Availability.init(periods: authUser.periodsDefault))
+                  AdminData.init(id: user.id!, firstName: user.firstName, lastName: user.lastName, email: user.email, supplementaryJSON: user.supplementaryJSON)
               }
             return users
         }

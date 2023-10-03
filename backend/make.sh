@@ -1,5 +1,7 @@
 #!/bin/bash
-pushd ../frontend
-run
-popd
+
+#FIX PATHING!
+#pushd ../frontend
+#run
+#popd
 makeSwift "$@"

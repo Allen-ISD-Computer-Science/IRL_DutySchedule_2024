@@ -6,44 +6,32 @@ import Crypto
 
 func routes(_ app: Application) throws {
 
-    /* Function that returns the content of the `index.html` file from the Public folder */
-    func serveIndex(_ req: Request, _ app: Application) -> Response {
-        return req.fileio.streamFile(at: "\(app.directory.publicDirectory)/index.html")
+    func renderIndex(_ request: Request) async throws ->  View {
+        return try await request.view.render("index.html")
     }
 
-    // 1
     app.get("") {req in
-        // todo: if a user, redirect to 
         req.redirect(to: "./signin")
     }
-    
+
     app.get("signin") { req in
-        req.auth.logout(User.self)
-        return serveIndex(req, app)
+         return try await renderIndex(req)
     }
-    
+
     app.get("signup") { req in
-        return serveIndex(req, app)
+        return try await renderIndex(req)
     }
 
-    app.get("verify", ":token") {req in
-        //let token = req.parameters.get("token")!
-        //let user = try await User.query(on: req.db).filter(\.$token == token).first()
-        
-        //TODO: if the user is already verified, redirect to login
-        return serveIndex(req, app)
-    }
-    
-    app.get("updateAccount", ":token") {req in
-        //let token = req.parameters.get("token")!
-        //let user = try await User.query(on: req.db).filter(\.$token == token).first()
-        
-        //TODO: if the user is already verified, redirect to login
-        return serveIndex(req, app)
+    app.get("forgot") { req in
+        return try await renderIndex(req)
     }
 
-    app.get("forgot") {req in
-        return serveIndex(req, app)
+    app.get("verify", "*") { req in
+         return try await renderIndex(req)
+    }
+
+    app.get("forgotPassword", "*") { req in
+        return try await renderIndex(req)
     }
 
     /// START CORE SITE ENDPOINTS
@@ -51,20 +39,23 @@ func routes(_ app: Application) throws {
     // Create protected route group which requires user auth.
     let sessions = app.grouped([User.sessionAuthenticator(), User.credentialsAuthenticator()])
     let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
-    let adminProtected = sessions.grouped([EnsureAdminUserMiddleware(), User.redirectMiddleware(path: "./dashboard")])
+
+    protected.get("index") { req in
+        return try await renderIndex(req)
+    }
 
     protected.get("dashboard") { req in
-        return serveIndex(req, app)
+        return try await renderIndex(req)
     }
 
     protected.get("calendar") { req in
-        return serveIndex(req, app)
+        return try await renderIndex(req)
     }
 
     struct CalendarDataRes : Content {
         var day : Date
         var dayOfWeek: Int?
-        var supplementaryJSON : Day.DayType
+        var supplementaryJSON : OptionalSupplementaryJSON
     }
 
     struct CalendarDataReq : Content {
@@ -75,46 +66,51 @@ func routes(_ app: Application) throws {
     protected.post("calendar", "data") { req async throws -> [CalendarDataRes] in
         let user = try req.auth.require(User.self)
         let calendarDataReq = try req.content.decode(CalendarDataReq.self)
-        if user != nil {
-            let days = try await Day.query(on: req.db)
-              .filter(\.$day >= calendarDataReq.from)
-              .filter(\.$day <= calendarDataReq.through)
-              .field(\.$day)
-              .field(\.$dayOfWeek)
-              .field(\.$supplementaryJSON)
-              .all()
-              .map { day in
-                  CalendarDataRes.init(day: day.day, dayOfWeek: day.dayOfWeek!, supplementaryJSON: day.supplementaryJSON!)
-              }
-            
-            return days
-        }
-        throw Abort(.notFound)
-    }
-    
-    protected.get("index") {req -> View in
-        return try await req.view.render("index.html")
-    }
-    
-    adminProtected.get("adminPanel") { req in
-        return serveIndex(req, app)
-    }
 
-    adminProtected.get("adminPanel", "upload") { req in
-       return serveIndex(req, app)
+        let days = try await Day.query(on: req.db)
+          .filter(\.$day >= calendarDataReq.from)
+          .filter(\.$day <= calendarDataReq.through)
+          .field(\.$day)
+          .field(\.$dayOfWeek)
+          .field(\.$supplementaryJSON)
+          .all()
+          .map { day in
+              CalendarDataRes.init(day: day.day, dayOfWeek: day.dayOfWeek!, supplementaryJSON: day.supplementaryJSON)
+          }
+
+        return days
     }
    
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)
-        if user != nil { //TODO FIX!
-            return 1
+
+        if user.$role.value == nil {
+            try await user.$role.load(on: req.db)
         }
-        return 0
+
+        let adminRole = try await Role.adminRole(on: req.db)
+
+        guard user.role == adminRole else {
+            return 0
+        }
+
+        return 1
     }
     
-    protected.get("logout") { req -> Response in
+    protected.get("logout") { req in
         req.auth.logout(User.self)
-        return req.redirect(to: "./login")
+        return req.redirect(to: "./signin")
+    }
+
+
+    let adminProtected = protected.grouped(EnsureAdminUserMiddleware())
+
+    adminProtected.get("adminPanel") { req in
+        return try await renderIndex(req)
+    }
+
+    adminProtected.get("adminPanel", "upload") { req in
+       return try await renderIndex(req)
     }
     
     /// END CORE SITE ENDPOINTS

@@ -33,24 +33,22 @@ final class User: Model, Content {
     @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
 
-    @Field(key: "supplementaryJSON")
+    @OptionalField(key: "supplementaryJSON")
     var supplementaryJSON: Availability?
 
     init() { }
 
-    let periodsDefault = [Int](repeating: 0, count: 1)
     struct Availability : Content{
         var periods: [Int?]
     }
 
     func hasPassword() -> Bool {
-        return authenticators.contains(where: { $0.isPasswordActive() })
+        return authenticators.contains(where: { $0.isPassword() && $0.isActive() })
     }
 
     func getPasswordAuthenticator(returnNullableToken: Bool = false) -> UserAuthentication? {
-        return authenticators.first(where: { returnNullableToken ? $0.isPassword() : $0.isPasswordActive() })
+        return authenticators.first(where: { (returnNullableToken || $0.isActive()) && $0.isPassword() })
     }
-       
 }
 
 extension User {

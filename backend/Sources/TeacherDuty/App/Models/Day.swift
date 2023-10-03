@@ -13,7 +13,7 @@ final class Day: Model, Content {
     var externalID: UUID?
 
     @Parent(key: "contextID")
-    var contextID: Context
+    var context: Context
 
     @Field(key: "day")
     var day: Date
@@ -21,8 +21,8 @@ final class Day: Model, Content {
     @OptionalField(key: "dayOfWeek")
     var dayOfWeek: Int?
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: DayType?
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
    
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
@@ -33,6 +33,6 @@ final class Day: Model, Content {
     init() { }
 
     struct DayType : Content {
-        var abDay : String?
+        var abDay: String?
     }
 }

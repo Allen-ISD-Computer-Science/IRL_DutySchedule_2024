@@ -21,8 +21,8 @@ final class Duty: Model, Content {
     @Field(key: "description")
     var description: String
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?

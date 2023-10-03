@@ -126,7 +126,7 @@ struct LoginController: RouteCollection {
                 return LoginError(error: "Verfication action not supported.")
             }
 
-            guard !authenticator.isPasswordActive() else {
+            guard !authenticator.isActive() else {
                 return LoginError(error: "User is already verfied.")
             }
 
@@ -153,7 +153,7 @@ struct LoginController: RouteCollection {
                 return LoginError(error: "User not found.")
             }
 
-            guard authenticator.isPasswordActive() else {
+            guard authenticator.isActive() && authenticator.isPassword() else {
                 return LoginError(error: "User requires registeration.")
             }
 

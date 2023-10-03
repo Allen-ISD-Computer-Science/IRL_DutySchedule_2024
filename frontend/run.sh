@@ -29,7 +29,7 @@ export REACT_APP_USER=$USER
 # Build
 npm run build
 
-# Move files from the root folder to ../../backend/Resources/Views/
+echo "Moving index.html from the build folder to ../backend/Resources/Views"
 echo "Moving files from the build folder to ../backend/Public"
 staticFolder="../backend/Public/static"
 
@@ -38,6 +38,7 @@ if [ -d "$staticFolder" ]; then
     rm -r "$staticFolder"
 fi
 
+mv -f build/index.html ../backend/Resources/Views
 mv -f build/* ../backend/Public
 
 echo "File move completed."

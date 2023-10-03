@@ -18,8 +18,8 @@ final class UserShift: Model, Content {
     @Parent(key: "shiftID")
     var shift: Shift
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?

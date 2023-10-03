@@ -18,8 +18,8 @@ final class UserAvailability: Model, Content {
     @Parent(key: "userID")
     var user: User
 
-    @Field(key: "supplementaryJSON")
-    var supplementaryJSON: Data
+    @OptionalField(key: "supplementaryJSON")
+    var supplementaryJSON: OptionalSupplementaryJSON
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
