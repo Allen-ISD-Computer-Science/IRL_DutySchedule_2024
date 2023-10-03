@@ -39,12 +39,7 @@ final class UserAuthentication: Model, Content {
     }
 
     func isPassword() -> Bool {
-        if supplementaryJSON == nil {
-            return true
-        }
-        else {
-            return false
-        }
+        return supplementaryJSON == nil
     }
 
     init() { }
