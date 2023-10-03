@@ -26,7 +26,7 @@ final class UserAuthentication: Model, Content {
     var resetTimestamp: Date?
 
     @Field(key: "supplementaryJSON")
-    var supplementaryJSON: JSONData
+    var supplementaryJSON: JSONData?
 
     @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
@@ -39,7 +39,12 @@ final class UserAuthentication: Model, Content {
     }
 
     func isPassword() -> Bool {
-        return supplementaryJSON.isEmpty
+        if supplementaryJSON == nil {
+            return true
+        }
+        else {
+            return false
+        }
     }
 
     init() { }
