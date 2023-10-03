@@ -32,10 +32,16 @@ npm run build
 echo "Moving index.html from the build folder to ../backend/Resources/Views"
 echo "Moving files from the build folder to ../backend/Public"
 staticFolder="../backend/Public/static"
+viewFolder="../backend/Resources/Views"
 
 if [ -d "$staticFolder" ]; then
     echo "Deleting existing static directory..."
     rm -r "$staticFolder"
+fi
+
+if [ ! -d "$viewFolder" ]; then
+    echo "Creating view folder..."
+    mkdir -p $viewFolder
 fi
 
 mv -f build/index.html ../backend/Resources/Views
