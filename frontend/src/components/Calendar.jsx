@@ -37,7 +37,8 @@ function Calendar() {
             const date = new Date(start);
             const dayNum = document.getElementById(`dayNum-${date.toISOString().split('T')[0]}`);
             if (dayNum) {
-                dayNum.style.color = colorAorB(date);
+                console.log(dateInfo.find(a => a.day === date.toISOString()));
+                dayNum.style.color = dateInfo.find(a => a.day === date.toISOString()).supplementaryJSON.abDay ? "#c03a2a" : "#161b5f";
             }
             start.setDate(start.getDate() + 1);
         }
@@ -45,26 +46,20 @@ function Calendar() {
 
     const getData = (info) => {
         // make http request to get data
-        /*
-        fetch("http://localhost:8080/api/dateInfo/",
+        fetch(process.env.PUBLIC_URL + "/calendar/data",
         {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
             method: "POST",
-            body: JSON.stringify({a: 1, b: 2})
+            body: JSON.stringify({from: info.start, through: info.end})
         })
         .then((response) => response.json())
         .then((json) => {
             setDateInfo(json);
             updateDayColors();
-        });  
-        */
-
-        setTimeout(() => {
-            updateDayColors(info);
-        }, 100);
+        });
     }
 
     return (
