@@ -1,3 +1,4 @@
 #Ignore React builds.
 Public/static/
+Public/asset-manifest.json
 Resources/Views/index.html
