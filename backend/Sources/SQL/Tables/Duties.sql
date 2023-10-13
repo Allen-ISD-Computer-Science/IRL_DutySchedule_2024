@@ -20,6 +20,7 @@
 CREATE TABLE Duties (
     id INT NOT NULL AUTO_INCREMENT,
     externalID BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
+    externalIDText VARCHAR(36) GENERATED ALWAYS AS (BIN_TO_UUID(externalID)),
     
     contextID INT NOT NULL,
 
