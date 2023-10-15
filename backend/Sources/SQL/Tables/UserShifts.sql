@@ -44,8 +44,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
 
-    SELECT contextID INTO userContextID FROM Users WHERE userID = NEW.userID;
-    SELECT contextID INTO shiftContextID FROM Shifts WHERE shiftID = NEW.shiftID;
+    SELECT contextID INTO userContextID FROM Users WHERE id = NEW.userID;
+    SELECT contextID INTO shiftContextID FROM Shifts WHERE id = NEW.shiftID;
 
     IF userContextID != shiftContextID THEN
         SIGNAL error_context_id_mismatch;
@@ -64,8 +64,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
     
-    SELECT contextID INTO userContextID FROM Users WHERE userID = NEW.userID;
-    SELECT contextID INTO shiftContextID FROM Shifts WHERE shiftID = NEW.shiftID;
+    SELECT contextID INTO userContextID FROM Users WHERE id = NEW.userID;
+    SELECT contextID INTO shiftContextID FROM Shifts WHERE id = NEW.shiftID;
 
     IF userContextID != shiftContextID THEN
         SIGNAL error_context_id_mismatch;

@@ -19,10 +19,15 @@ CREATE VIEW RolesView
 AS
 SELECT r.id AS roleID,
        r.externalID AS roleExternalID,
+       r.externalIDText AS roleExternalIDText,
+       r.role AS roleRole,
+       r.supplementaryJSON AS roleSupplementaryJSON,
        
        c.id AS contextID,
        c.externalID AS contextExternalID,
-       c.name AS contextName
+       c.externalIDText AS contextExternalIDText,
+       c.name AS contextName,
+       c.supplementaryJSON AS contextSupplementaryJSON
   FROM Roles r
  INNER JOIN Contexts c
     ON r.contextID = c.id;

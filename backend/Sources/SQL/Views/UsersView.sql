@@ -13,21 +13,35 @@
 
 -- ================================================================================================
 -- UsersView
--- Augments Users with data from Roles and Contexts
+-- Augments Users with data from Roles and Contexts (via UserRoles)
 -- ================================================================================================
 CREATE VIEW UsersView
 AS
 SELECT u.id AS userID,
+       u.externalID AS userExternalID,
+       u.externalIDText AS userExternalIDText,
        u.firstName AS userFirstName,
        u.lastName AS userLastName,
        u.emailAddress AS userEmailAddress,
+       u.supplementaryJSON AS userSupplementaryJSON,
+
+       ur.id AS userRoleID,
+       ur.externalID AS userRoleExternalID,
+       ur.externalIDText AS userRoleExternalIDText,
 
        rv.roleID AS roleID,
-       rv.rolesExternalID AS roleExternalID,
+       rv.roleExternalID AS roleExternalID,
+       rv.roleExternalIDText AS roleExternalIDText,
+       rv.roleRole AS roleRole,
+       rv.roleSupplementaryJSON AS roleSupplementaryJSON,
 
        rv.contextID AS contextID,
-       rv.externalID AS contextExternalID,
-       rv.name AS contextName
+       rv.contextExternalID AS contextExternalID,
+       rv.contextExternalIDText AS contextExternalIDText,
+       rv.contextName AS contextName,
+       rv.contextSupplementaryJSON AS contextSupplementaryJSON
   FROM Users u
+ INNER JOIN UserRoles ur
+    ON ur.userID = u.id
  INNER JOIN RolesView rv
-    ON u.roleId = rv.id;
+    ON rv.roleID = ur.roleID;

@@ -12,28 +12,29 @@
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
 -- ================================================================================================
--- Users
--- Users within a context
+-- ShiftTemplates
+-- ShiftTemplates represent a range of time within a specific context for which a Shift may be created
 -- ================================================================================================
-CREATE TABLE Users (
+CREATE TABLE ShiftTemplates (
     id INT NOT NULL AUTO_INCREMENT,
     externalID BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     externalIDText VARCHAR(36) GENERATED ALWAYS AS (BIN_TO_UUID(externalID)),
-    
-    firstName VARCHAR(32) NOT NULL,
-    lastName VARCHAR(32) NOT NULL,
-    emailAddress VARCHAR(64) NOT NULL,
+
+    contextID INT NOT NULL,
+
+    startTime TIME NOT NULL,
+    endTime TIME NOT NULL,
+
+    name VARCHAR(64) NOT NULL,
+    description TEXT NULL DEFAULT NULL,
     supplementaryJSON JSON NULL DEFAULT NULL,
 
-    passwordHash VARCHAR(64) NULL,
-    accessToken VARCHAR(64) NULL,
-    
     creationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modificationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    CONSTRAINT PK_Users_id PRIMARY KEY (id),
-    CONSTRAINT UK_Users_externalID UNIQUE (externalID),
-    CONSTRAINT UK_Users_emailAddress UNIQUE (emailAddress)
+
+    CONSTRAINT PK_ShiftTemplates_id PRIMARY KEY (id),
+    CONSTRAINT UK_ShiftTemplates_externalID UNIQUE (externalID),
+    CONSTRAINT UK_ShiftTemplates_contextID_name UNIQUE(contextID, name),
+    CONSTRAINT FK_ShiftTemplates_contextID FOREIGN KEY (contextID) REFERENCES Contexts(id),
+    CONSTRAINT CK_ShiftTemplates_startTime_endTime CHECK (startTime < endTime)
 );
-
-

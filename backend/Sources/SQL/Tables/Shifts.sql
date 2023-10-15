@@ -35,7 +35,7 @@ CREATE TABLE Shifts (
     CONSTRAINT UK_Shifts_externalID UNIQUE (externalID),
     CONSTRAINT FK_Shifts_dayID FOREIGN KEY (dayID) REFERENCES Days(id),
     CONSTRAINT FK_Shifts_positionID FOREIGN KEY (positionID) REFERENCES Positions(id),
-    CONSTRAINT CK_Shifts_startTime_endTime CHECK (startTime > endTime)
+    CONSTRAINT CK_Shifts_startTime_endTime CHECK (startTime < endTime)
 );
 
 -- Triggers for Shifts 
@@ -49,8 +49,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
 
-    SELECT contextID INTO dayContextID FROM Duties WHERE dayID = NEW.dayID;
-    SELECT contextID INTO positionContextID FROM Positions WHERE positionID = NEW.positionID;
+    SELECT contextID INTO dayContextID FROM Days WHERE id = NEW.dayID;
+    SELECT d.contextID INTO positionContextID FROM Positions p INNER JOIN Duties d ON p.dutyID = d.id WHERE p.id = NEW.positionID;
 
     IF dayContextID != positionContextID THEN
         SIGNAL error_context_id_mismatch;
@@ -69,8 +69,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
     
-    SELECT contextID INTO dayContextID FROM Duties WHERE dayID = NEW.dayID;
-    SELECT contextID INTO positionContextID FROM Positions WHERE positionID = NEW.positionID;
+    SELECT contextID INTO dayContextID FROM Days WHERE id = NEW.dayID;
+    SELECT d.contextID INTO positionContextID FROM Positions p INNER JOIN Duties d ON p.dutyID = d.id WHERE p.id = NEW.positionID;
 
     IF dayContextID != positionContextID THEN
         SIGNAL error_context_id_mismatch;

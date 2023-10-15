@@ -45,8 +45,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
 
-    SELECT contextID INTO dutyContextID FROM Duties WHERE dutyID = NEW.dutyID;
-    SELECT contextID INTO locationContextID FROM Locations WHERE locationID = NEW.locationID;
+    SELECT contextID INTO dutyContextID FROM Duties d WHERE d.id = NEW.dutyID;
+    SELECT contextID INTO locationContextID FROM Locations l WHERE l.id = NEW.locationID;
 
     IF dutyContextID != locationContextID THEN
         SIGNAL error_context_id_mismatch;
@@ -65,8 +65,8 @@ BEGIN
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
     
-    SELECT contextID INTO dutyContextID FROM Duties WHERE dutyID = NEW.dutyID;
-    SELECT contextID INTO locationContextID FROM Locations WHERE locationID = NEW.locationID;
+    SELECT contextID INTO dutyContextID FROM Duties d WHERE d.id = NEW.dutyID;
+    SELECT contextID INTO locationContextID FROM Locations l WHERE l.id = NEW.locationID;
 
     IF dutyContextID != locationContextID THEN
         SIGNAL error_context_id_mismatch;

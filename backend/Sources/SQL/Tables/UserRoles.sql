@@ -12,28 +12,25 @@
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
 -- ================================================================================================
--- Users
--- Users within a context
+-- UserRoles
+-- UserRoles associate a specific user with a specific role
 -- ================================================================================================
-CREATE TABLE Users (
+CREATE TABLE UserRoles (
     id INT NOT NULL AUTO_INCREMENT,
     externalID BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     externalIDText VARCHAR(36) GENERATED ALWAYS AS (BIN_TO_UUID(externalID)),
-    
-    firstName VARCHAR(32) NOT NULL,
-    lastName VARCHAR(32) NOT NULL,
-    emailAddress VARCHAR(64) NOT NULL,
-    supplementaryJSON JSON NULL DEFAULT NULL,
 
-    passwordHash VARCHAR(64) NULL,
-    accessToken VARCHAR(64) NULL,
+    userID INT NOT NULL,
+    roleID INT NOT NULL,
     
     creationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modificationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    CONSTRAINT PK_Users_id PRIMARY KEY (id),
-    CONSTRAINT UK_Users_externalID UNIQUE (externalID),
-    CONSTRAINT UK_Users_emailAddress UNIQUE (emailAddress)
+    CONSTRAINT PK_UserRoles_id PRIMARY KEY (id),
+    CONSTRAINT UK_UserRoles_externalID UNIQUE (externalID),
+    CONSTRAINT FK_UserRoles_userID FOREIGN KEY (userID) REFERENCES Users(id),
+    CONSTRAINT FK_UserRoles_roleID FOREIGN KEY (roleID) REFERENCES Roles(id)
 );
+
 
 
