@@ -1,8 +1,21 @@
 # Building on CoderMerlin
-Some limits will need to be increased in order to successfully build:
-* open files - execute: `ulimit -n 8192`
-* user processes - execute: `ulimit -u 256`
+* Required environment variables
+  * PUBLIC_URL
+  * REACT_APP_USER 
+* Execute 'build' from the root of the project
+  * This will build the backend and the frontend
+  * The frontend will be copied to Vapor for serving
 
+# Running on CoderMerlin
+* Required enviornment variables
+  * MYSQL_HOSTNAME
+  * MYSQL_PORT
+  * MYSQL_DATABASE_NAME
+  * MYSQL_USERNAME
+  * MYSQL_PASSWORD
+* Execute 'run' from the root of the project
+
+# Rebuilding the Frontend
 If necessary to clear the npm cache:
 * `npm cache clean --force`
 
@@ -12,7 +25,4 @@ In case of emergency:
 * clean up the NPM cache by running `npm cache clean --force`
 * install all packages again by running `npm install`
 
-# Running on CoderMerlin
-Steps required to run the application on CoderMerlin:
-* in the frontend/ directory - execute: `run`
-* in the backend/ directory - execute: `run`
+

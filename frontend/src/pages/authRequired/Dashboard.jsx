@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faClock } from '@fortawesome/free-solid-svg-icons'
@@ -12,6 +12,7 @@ import Navbar from '../../components/Navbar'
 import "./calendar.css"
 
 function DashboardPage(props) {
+    
   return (
     <main className="fullPage" style={{ backgroundColor: "hsl(0, 0%, 96%)" }}>
         <Navbar />
@@ -25,9 +26,9 @@ function DashboardPage(props) {
                     <p><FontAwesomeIcon icon={faClock} /> {props.nextDutyTime || "None"}</p>
                   </Container>
 
-                  {
-                    false ? 
+		    <Container className='shadow p-3 mb-5 bg-white rounded mt-4'>			
                     <FullCalendar
+			className="d-block"
                       themeSystem='bootstrap5'
                       plugins={[ timeGridPlugin ]}
                       initialView="timeGridWeek"
@@ -42,8 +43,8 @@ function DashboardPage(props) {
                       }}
                       contentHeight={"auto"}
                     />
-                    : ""
-                  }
+			}
+			</Container>
                 </Container>
             </div>
         </section>

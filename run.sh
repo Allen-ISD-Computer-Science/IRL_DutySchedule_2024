@@ -14,8 +14,7 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/.
 set -eu
 
-# Run
-echo "WARN: There's nothing to run here. The front end is served from Vapor."
-echo "      Execute run from the project root."
-exit 1
-
+# Run from backend directory
+pushd backend
+run
+popd

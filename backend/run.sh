@@ -14,8 +14,14 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/.
 set -eu
 
-# Run
-echo "WARN: There's nothing to run here. The front end is served from Vapor."
-echo "      Execute run from the project root."
-exit 1
+# Ensure front-end has been built before attempting to run
+if [ ! -d "Public/static/" ]
+then
+    echo "WARN: Frontend has not yet been built."
+    echo "      Build front-end before attempting to run by executing"
+    echo "      'run' from the root directory."
+    exit 1
+fi
 
+# Run
+makeSwift --mode=run "$@"
