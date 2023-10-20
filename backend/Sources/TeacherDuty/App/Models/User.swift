@@ -12,9 +12,9 @@ final class User: Model, Content {
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
 
-    @Parent(key: "roleID")
-    var role: Role
-
+    @ID(custom: "externalIDText", generatedBy: .database)
+    var externalIDText: String?
+    
     @Field(key: "firstName")
     var firstName: String
 

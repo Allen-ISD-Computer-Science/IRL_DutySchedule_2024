@@ -1,4 +1,5 @@
 import Vapor
+import Fluent
 
 struct EnsureAdminUserMiddleware: AsyncMiddleware {
     func respond(to request: Request, chainingTo next: AsyncResponder) async throws -> Response {
@@ -6,13 +7,18 @@ struct EnsureAdminUserMiddleware: AsyncMiddleware {
             throw Abort(.unauthorized)
         }
 
-        if user.$role.value == nil { // Check to see if role is loaded.
-            try await user.$role.load(on: request.db)
+        let userRole = try await UserRoles.query(on: request.db)
+          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
+          .filter(User.self, \.$id == user.id!)
+          .first()
+        
+        if userRole!.$role.value == nil { // Check to see if role is loaded.
+            try await userRole!.$role.load(on: request.db)
         } // Continue
 
         let adminRole = try await Role.adminRole(on: request.db)
 
-        guard user.role == adminRole else {
+        guard userRole!.role == adminRole else {
             throw Abort(.unauthorized)
         }
 

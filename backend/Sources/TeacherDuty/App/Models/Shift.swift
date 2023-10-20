@@ -12,6 +12,9 @@ final class Shift: Model, Content {
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
 
+    @ID(custom: "externalIDText", generatedBy: .database)
+    var externalIDText: String?
+    
     @Parent(key: "dayID")
     var day: Day
 

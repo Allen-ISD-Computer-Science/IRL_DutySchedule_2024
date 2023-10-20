@@ -11,7 +11,7 @@ final class UserAuthentication: Model, Content {
 
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
-
+    
     @Parent(key: "userID")
     var user: User
 

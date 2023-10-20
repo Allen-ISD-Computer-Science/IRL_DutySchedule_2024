@@ -84,13 +84,19 @@ func routes(_ app: Application) throws {
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)
 
-        if user.$role.value == nil {
-            try await user.$role.load(on: req.db)
+        let userRole = try await UserRoles.query(on: req.db)
+          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
+          .filter(User.self, \.$id == user.id!)
+          .first()
+
+        
+        if userRole!.$role.value == nil {
+            try await userRole!.$role.load(on: req.db)
         }
 
         let adminRole = try await Role.adminRole(on: req.db)
 
-        guard user.role == adminRole else {
+        guard userRole!.role == adminRole else {
             return 0
         }
 

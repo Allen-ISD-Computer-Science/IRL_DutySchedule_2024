@@ -3,8 +3,8 @@ import Fluent
 import FluentMySQLDriver
 import Crypto
 
-final class Position: Model, Content {
-    static let schema = "Positions"
+final class UserRoles: Model, Content {
+    static let schema = "UserRoles"
 
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
@@ -15,20 +15,18 @@ final class Position: Model, Content {
     @ID(custom: "externalIDText", generatedBy: .database)
     var externalIDText: String?
     
-    @Parent(key: "dutyID")
-    var duty: Duty
+    @Parent(key: "userID")
+    var user: User
 
-    @Parent(key: "locationID")
-    var location: Location
+    @Parent(key: "roleID")
+    var role: Role
 
-    @OptionalField(key: "supplementaryJSON")
-    var supplementaryJSON: OptionalSupplementaryJSON
-
-    @Timestamp(key: "creationTimestamp", on: .create, format: .default)
+    @Timestamp(key: "creationTimestamp", on: .create)
     var creationTimestamp: Date?
     
     @Timestamp(key: "modificationTimestamp", on: .update)
     var modificationTimestamp: Date?
 
     init() { }
+
 }

@@ -55,7 +55,7 @@ struct LoginController: RouteCollection {
             user.firstName = create.firstName
             user.lastName = create.lastName
             user.email = create.email
-            user.$role.id = try await Role.defaultRole(on: req.db).id! // default role, querrys db too!
+//            user.$role.id = try await Role.defaultRole(on: req.db).id! // default role, querrys db too!
 
             let authenticator = UserAuthentication()
             authenticator.resetToken = randomString(length: 64)
