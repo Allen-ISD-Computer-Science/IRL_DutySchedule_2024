@@ -84,19 +84,21 @@ func routes(_ app: Application) throws {
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)
 
-        let userRole = try await UserRoles.query(on: req.db)
-          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-          .filter(User.self, \.$id == user.id!)
-          .first()
-
-        
-        if userRole!.$role.value == nil {
-            try await userRole!.$role.load(on: req.db)
+        guard let userId = user.id else {
+            app.logger.warning("User `\(user.email)` does not have id field.")
+            return 0 // How?
         }
 
-        let adminRole = try await Role.adminRole(on: req.db)
+        guard let adminRoleId = try await Role.adminRole(on: req.db).id else {
+            app.logger.critical("Admin role not located.")
+            return 0
+        }
 
-        guard userRole!.role == adminRole else {
+        guard try await UserRoles.query(on: req.db)
+                .filter(\.$user.$id == userId)
+                .filter(\.$role.$id == adminRoleId)
+                .count() == 1 else {
+            // User does not have the admin role.
             return 0
         }
 

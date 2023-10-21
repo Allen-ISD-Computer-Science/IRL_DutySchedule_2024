@@ -7,28 +7,24 @@ struct EnsureAdminUserMiddleware: AsyncMiddleware {
             throw Abort(.unauthorized)
         }
 
-        let userRole = try await UserRoles.query(on: request.db)
-          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-          .filter(User.self, \.$id == user.id!)
-          .first()
-        
-        if userRole!.$role.value == nil { // Check to see if role is loaded.
-            try await userRole!.$role.load(on: request.db)
-        } // Continue
+        guard let userId = user.id else {
+            app.logger.warning("User `\(user.email)` does not have id field.")
+            throw Abort(.expectationFailed)
+        }
 
-        let adminRole = try await Role.adminRole(on: request.db)
+        guard let adminRoleId = try await Role.adminRole(on: request.db).id else {
+            app.logger.critical("Admin role not located.")
+            throw Abort(.expectationFailed)
+        }
 
-        guard userRole!.role == adminRole else {
+        guard try await UserRoles.query(on: request.db)
+                .filter(\.$user.$id == userId)
+                .filter(\.$role.$id == adminRoleId)
+                .count() == 1 else {
+            // User does not have the admin role.
             throw Abort(.unauthorized)
         }
 
         return try await next.respond(to: request)
-    }
-}
-
-
-extension Role {
-    static func ==(lhs: Role, rhs: Role) -> Bool {
-        return lhs.id! == rhs.id! && lhs.role == rhs.role
     }
 }
