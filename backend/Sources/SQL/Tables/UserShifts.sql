@@ -39,15 +39,26 @@ CREATE TRIGGER trigger_UserShifts_Insert
 BEFORE INSERT ON UserShifts 
 FOR EACH ROW
 BEGIN
-    DECLARE userContextID INT;
-    DECLARE shiftContextID INT;
+    DECLARE matchingContextIDCount INT;
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
 
-    SELECT contextID INTO userContextID FROM Users WHERE id = NEW.userID;
-    SELECT contextID INTO shiftContextID FROM Shifts WHERE id = NEW.shiftID;
+    SELECT COUNT(*) INTO matchingContextIDCount
+      FROM Users u
+     INNER JOIN UserRoles ur
+        ON u.id = ur.userID
+     INNER JOIN Roles r
+        ON ur.roleID = r.id
+     INNER JOIN Shifts s
+        ON s.id = NEW.shiftID
+     INNER JOIN Positions p
+        ON p.id = s.positionID
+     INNER JOIN Locations l
+        ON l.id = p.locationID
+     WHERE u.id = NEW.userID
+       AND r.contextID = l.contextID;
 
-    IF userContextID != shiftContextID THEN
+    IF matchingContextIDCount = 0 THEN
         SIGNAL error_context_id_mismatch;
     END IF;
 END;	
@@ -59,15 +70,26 @@ CREATE TRIGGER trigger_UserShifts_Update
 BEFORE UPDATE ON UserShifts  
 FOR EACH ROW
 BEGIN
-    DECLARE userContextID INT;
-    DECLARE shiftContextID INT;
+    DECLARE matchingContextIDCount INT;
 
     DECLARE error_context_id_mismatch CONDITION FOR SQLSTATE '45000';
-    
-    SELECT contextID INTO userContextID FROM Users WHERE id = NEW.userID;
-    SELECT contextID INTO shiftContextID FROM Shifts WHERE id = NEW.shiftID;
 
-    IF userContextID != shiftContextID THEN
+    SELECT COUNT(*) INTO matchingContextIDCount
+      FROM Users u
+     INNER JOIN UserRoles ur
+        ON u.id = ur.userID
+     INNER JOIN Roles r
+        ON ur.roleID = r.id
+     INNER JOIN Shifts s
+        ON s.id = NEW.shiftID
+     INNER JOIN Positions p
+        ON p.id = s.positionID
+     INNER JOIN Locations l
+        ON l.id = p.locationID
+     WHERE u.id = NEW.userID
+       AND r.contextID = l.contextID;
+
+    IF matchingContextIDCount = 0 THEN
         SIGNAL error_context_id_mismatch;
     END IF;
 END;    
