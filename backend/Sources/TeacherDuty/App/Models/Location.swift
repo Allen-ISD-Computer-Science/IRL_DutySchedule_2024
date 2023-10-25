@@ -12,7 +12,7 @@ final class Location: Model, Content {
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
 
-    @Parent(key: "condextID")
+    @Parent(key: "contextID")
     var contextID: Context
     
     @Field(key: "name")

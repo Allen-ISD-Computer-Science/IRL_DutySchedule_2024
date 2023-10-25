@@ -94,7 +94,7 @@ extension User.Verify: Validatable{
 }
 
 extension User: SessionAuthenticatable {
-    var sessionID: Int?
+    private var sessionID: Int?
     {
         self.id!
     }

@@ -1,10 +1,9 @@
 import Vapor
 import Fluent
 
-
 final class Shift: Model, Content {
     static let schema = "Shifts"
-
+    
     @ID(custom: "id", generatedBy: .database)
     var id: Int?
 

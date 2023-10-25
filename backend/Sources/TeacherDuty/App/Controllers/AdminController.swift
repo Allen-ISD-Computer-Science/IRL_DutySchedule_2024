@@ -33,7 +33,6 @@ struct AdminController: RouteCollection {
             var supplementaryJSON : User.Availability?
         }
         adminProtected.get("adminPanel", "data") { req -> [AdminData] in
-            let authUser = try req.auth.require(User.self)
             let users = try await User.query(on: req.db)
               .field(\.$id)
               .field(\.$firstName)

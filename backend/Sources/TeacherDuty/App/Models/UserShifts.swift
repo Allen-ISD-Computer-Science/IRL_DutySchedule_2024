@@ -3,7 +3,7 @@ import Fluent
 import FluentMySQLDriver
 import Crypto
 
-final class UserShift: Model, Content {
+final class UserShifts: Model, Content {
     static let schema = "UserShifts"
 
     @ID(custom: "id", generatedBy: .database)
