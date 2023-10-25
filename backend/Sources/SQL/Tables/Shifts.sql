@@ -23,8 +23,8 @@ CREATE TABLE Shifts (
     dayID INT NOT NULL,
     positionID INT NOT NULL,
 
-    startTime TIME NOT NULL,
-    endTime TIME NOT NULL,
+    startTime CHAR(8) NOT NULL, -- Formatted as 01:23:45
+    endTime CHAR(8) NOT NULL,
 
     supplementaryJSON JSON NULL DEFAULT NULL,
 
@@ -35,7 +35,9 @@ CREATE TABLE Shifts (
     CONSTRAINT UK_Shifts_externalID UNIQUE (externalID),
     CONSTRAINT FK_Shifts_dayID FOREIGN KEY (dayID) REFERENCES Days(id),
     CONSTRAINT FK_Shifts_positionID FOREIGN KEY (positionID) REFERENCES Positions(id),
-    CONSTRAINT CK_Shifts_startTime_endTime CHECK (startTime < endTime)
+    CONSTRAINT CK_Shifts_startTime CHECK (LENGTH(startTime) = 8 AND TIME(startTime) IS NOT NULL),
+    CONSTRAINT CK_Shifts_endTime CHECK (LENGTH(endTime) = 8 AND TIME(endTime) IS NOT NULL),
+    CONSTRAINT CK_Shifts_startTime_endTime CHECK (TIME(startTime) < TIME(endTime))
 );
 
 -- Triggers for Shifts 

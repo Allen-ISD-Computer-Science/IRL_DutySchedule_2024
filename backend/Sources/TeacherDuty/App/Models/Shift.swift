@@ -1,7 +1,6 @@
 import Vapor
 import Fluent
-import FluentMySQLDriver
-import Crypto
+
 
 final class Shift: Model, Content {
     static let schema = "Shifts"
@@ -22,10 +21,10 @@ final class Shift: Model, Content {
     var position: Position
 
     @Field(key: "startTime")
-    var start: Date
+    var start: String 
 
     @Field(key: "endTime")
-    var end: Date
+    var end: String 
 
     @OptionalField(key: "supplementaryJSON")
     var supplementaryJSON: OptionalSupplementaryJSON
