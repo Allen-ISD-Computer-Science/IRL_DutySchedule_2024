@@ -32,3 +32,7 @@ final class Duty: Model, Content {
 
     init() { }
 }
+
+extension Duty: Contextable {
+    static let contextKey = \Duty.$context.$id
+}

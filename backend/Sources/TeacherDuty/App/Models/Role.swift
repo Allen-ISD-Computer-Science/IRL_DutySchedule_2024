@@ -45,3 +45,7 @@ final class Role: Model, Content {
 
     init() { }
 }
+
+extension Role: Contextable {
+    static let contextKey = \Role.$context.$id
+}

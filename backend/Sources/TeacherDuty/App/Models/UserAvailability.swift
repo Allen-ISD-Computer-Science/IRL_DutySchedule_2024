@@ -30,3 +30,8 @@ final class UserAvailability: Model, Content {
     init() { }
 
 }
+
+
+extension UserAvailability: Contextable {
+    static let contextKey = \UserAvailability.$context.$id
+}

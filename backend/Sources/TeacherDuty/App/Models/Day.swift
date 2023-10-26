@@ -36,3 +36,7 @@ final class Day: Model, Content {
         var abDay: String?
     }
 }
+
+extension Day: Contextable {
+    static let contextKey = \Day.$context.$id
+}

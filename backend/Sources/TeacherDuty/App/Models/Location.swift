@@ -13,7 +13,7 @@ final class Location: Model, Content {
     var externalID: UUID?
 
     @Parent(key: "contextID")
-    var contextID: Context
+    var context: Context
     
     @Field(key: "name")
     var name: String
@@ -31,4 +31,8 @@ final class Location: Model, Content {
     var modificationTimestamp: Date?
 
     init() { }
+}
+
+extension Location: Contextable {
+    static let contextKey = \Location.$context.$id
 }

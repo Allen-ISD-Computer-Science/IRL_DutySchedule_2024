@@ -36,3 +36,7 @@ final class Availability: Model, Content {
     init() { }
 
 }
+
+extension Availability: Contextable {
+    static let contextKey = \Availability.$context.$id
+}
