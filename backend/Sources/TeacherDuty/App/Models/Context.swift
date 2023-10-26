@@ -26,3 +26,25 @@ final class Context: Model, Content {
 
     init() { }
 }
+
+public protocol Contextable: Model {
+    static var contextKey: KeyPath<Self, FieldProperty<Self, Int>> { get }
+}
+
+// Add fields to all contextable.
+extension Contextable {
+    var _contextId: FieldProperty<Self, Int> {
+        self[keyPath: Self.contextKey]
+    }
+}
+
+extension QueryBuilder where Model: Contextable {
+    func context<Foreign>(_ context: Foreign.Type) -> Self
+      where Foreign: Contextable {
+        return self.filter(\Model._contextId == \Foreign._contextId)
+    }
+
+    func context(with context: Int) -> Self {
+        return self.filter(\Model._contextId == context)
+    }
+}
