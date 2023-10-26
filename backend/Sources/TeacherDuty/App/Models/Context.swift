@@ -39,7 +39,7 @@ extension Contextable {
 }
 
 extension QueryBuilder where Model: Contextable {
-    func context<Foreign>(_ context: Foreign.Type) -> Self
+    func context<Foreign>(_: Foreign.Type) -> Self
       where Foreign: Contextable {
         return self.filter(\Model._contextId == \Foreign._contextId)
     }
