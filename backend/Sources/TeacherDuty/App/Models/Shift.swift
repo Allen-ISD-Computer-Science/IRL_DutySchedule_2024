@@ -20,10 +20,10 @@ final class Shift: Model, Content {
     var position: Position
 
     @Field(key: "startTime")
-    var start: String 
+    var start: Time
 
     @Field(key: "endTime")
-    var end: String 
+    var end: Time
 
     @OptionalField(key: "supplementaryJSON")
     var supplementaryJSON: OptionalSupplementaryJSON
