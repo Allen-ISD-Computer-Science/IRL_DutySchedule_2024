@@ -140,43 +140,44 @@ func routes(_ app: Application) throws {
               .filter(Shift.self, \.$id == shiftId)
               .first()
 
-            let shiftDutyLoc = try await Position.query(on: req.db)
-              .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
-              .join(Location.self, on: \Position.$location.$id == \Location.$id)
-              .filter(Position.self, \.$id == shiftDayPos!.$position.id)
-              .first()
-            
-            let position = try shiftDayPos!.joined(Position.self)
-            let dayModel = try shiftDayPos!.joined(Day.self)
-            let location = try shiftDutyLoc!.joined(Location.self)
-            let duty = try shiftDutyLoc!.joined(Duty.self)
-
-            let startTime = shift.start
-            let endTime = shift.end
-            let day = dayModel.day
-            let dayOfWeek = dayModel.dayOfWeek
-            let dayType = dayModel.supplementaryJSON
-            let dutyName = duty.name
-            let dutyDescription = duty.description
-            let locationName = location.name
-            let locationDescription = location.description
-
-            let dutiesData = DutiesDataRes.init(
-              startTime: startTime,
-              endTime: endTime,
-              day: day,
-              dayOfWeek: dayOfWeek,
-              dayType: dayType,
-              dutyName: dutyName,
-              dutyDescription: dutyDescription,
-              locationName: locationName,
-              locationDescription: locationDescription
-            )
-
-            dutiesDataRes.append(dutiesData)
-            
+            if shiftDayPos != nil{
+                let shiftDutyLoc = try await Position.query(on: req.db)
+                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
+                  .filter(Position.self, \.$id == shiftDayPos!.$position.id)
+                  .first()
+                
+                let position = try shiftDayPos!.joined(Position.self)
+                let dayModel = try shiftDayPos!.joined(Day.self)
+                let location = try shiftDutyLoc!.joined(Location.self)
+                let duty = try shiftDutyLoc!.joined(Duty.self)
+                
+                let startTime = shift.start
+                let endTime = shift.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+                
+                let dutiesData = DutiesDataRes.init(
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription
+                )
+                
+                dutiesDataRes.append(dutiesData)
+            }
         }
-        
+        print("Duties Date Count: \(dutiesDataRes.count)")
         return dutiesDataRes
     }
 
@@ -202,15 +203,16 @@ func routes(_ app: Application) throws {
           .filter(User.self, \.$id == userId)
           .limit(dutiesDataReq.count)
           .all()
+
         //TODO: Use the role to find the users context
         /*      
-        let userRole = try await UserRoles.query(on: req.db)
-          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-          .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
-          .filter(User.self, \.$id == userId)
-          .first()
-
-        let role = try userRole!.joined(Role.self)
+                let userRole = try await UserRoles.query(on: req.db)
+                .join(User.self, on: \UserRoles.$user.$id == \User.$id)
+                .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
+                .filter(User.self, \.$id == userId)
+                .first()
+                
+                let role = try userRole!.joined(Role.self)
          */        
         
         for userShift in userShifts {
