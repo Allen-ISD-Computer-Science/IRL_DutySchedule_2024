@@ -103,9 +103,9 @@ func routes(_ app: Application) throws {
         var dutiesDataRes = [DutiesDataRes]()
         
         guard let userId = user.id else {
-        app.logger.warning("User `\(user.email)` does not have id field.")
-        throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
-    }
+            app.logger.warning("User `\(user.email)` does not have id field.")
+            throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
+        }
         
         let userShifts = try await UserShifts.query(on: req.db)
           .join(User.self, on: \UserShifts.$user.$id == \User.$id)
@@ -114,22 +114,22 @@ func routes(_ app: Application) throws {
           .all()
         //TODO: Use the role to find the users context
         /*      
-        let userRole = try await UserRoles.query(on: req.db)
-          .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-          .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
-          .filter(User.self, \.$id == userId)
-          .first()
+                let userRole = try await UserRoles.query(on: req.db)
+                .join(User.self, on: \UserRoles.$user.$id == \User.$id)
+                .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
+                .filter(User.self, \.$id == userId)
+                .first()
 
-        let role = try userRole!.joined(Role.self)
+                let role = try userRole!.joined(Role.self)
          */        
         
         for userShift in userShifts {
             let shift = try userShift.joined(Shift.self)
 
             guard let shiftId = shift.id else {
-            app.logger.warning("Shift does not have id field.")
-            throw Abort(.unauthorized, reason: "Shift does not have id field")
-        }
+                app.logger.warning("Shift does not have id field.")
+                throw Abort(.unauthorized, reason: "Shift does not have id field")
+            }
 
             //TODO: filter all of these joins by context
             let shiftDayPos = try await Shift.query(on: req.db)
@@ -140,7 +140,7 @@ func routes(_ app: Application) throws {
               .filter(Shift.self, \.$id == shiftId)
               .first()
 
-            if shiftDayPos != nil{
+            if shiftDayPos != nil {
                 let shiftDutyLoc = try await Position.query(on: req.db)
                   .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
                   .join(Location.self, on: \Position.$location.$id == \Location.$id)
@@ -193,9 +193,9 @@ func routes(_ app: Application) throws {
         var dutiesDataRes = [DutiesDataRes]()
         
         guard let userId = user.id else {
-        app.logger.warning("User `\(user.email)` does not have id field.")
-        throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
-    }
+            app.logger.warning("User `\(user.email)` does not have id field.")
+            throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
+        }
         
         let userShifts = try await UserShifts.query(on: req.db)
           .join(User.self, on: \UserShifts.$user.$id == \User.$id)

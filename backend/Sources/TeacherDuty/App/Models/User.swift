@@ -36,6 +36,9 @@ final class User: Model, Content {
     @OptionalField(key: "supplementaryJSON")
     var supplementaryJSON: Availability?
 
+    @Children(for: \.$user)
+    var shifts: [UserShifts]
+
     init() { }
 
     struct Availability : Content{
