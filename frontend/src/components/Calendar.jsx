@@ -4,11 +4,10 @@ import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 
 import { DayCellContentArg } from '@fullcalendar/core'
 
-function Calendar() {
+function Calendar(props) {
 
     const [didRequest, setDidRequest] = useState("");
     const [dateInfo, setDateInfo] = useState([]);
-    const eventsRef = useRef(0);
     const calendarRef = useRef(0);
 
     const setTime = (date, str) => {
@@ -33,7 +32,7 @@ function Calendar() {
 	    console.log(event)
             api.addEvent(event);
         });
-	eventsRef.current = eventsData;
+	props.eventsRef.current = eventsData;
     }
 
     /**
@@ -113,6 +112,7 @@ function Calendar() {
             datesSet={getData}
             dayCellContent={updateDayColor}
             hiddenDays={[0, 6]}
+	    eventClick={props.eventClick}
         />
     )
 }
