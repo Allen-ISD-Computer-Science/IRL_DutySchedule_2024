@@ -8,7 +8,13 @@ function Calendar() {
 
     const [didRequest, setDidRequest] = useState("");
     const [dateInfo, setDateInfo] = useState([]);
-    const calendarRef = useRef();
+    const eventsRef = useRef(0);
+    const calendarRef = useRef(0);
+
+    const setTime = (date, str) => {
+	const args = str.split(":").map(a => parseInt(a));
+	date.setHours(args[0], args[1], args[2]);
+    }
 
     /**
      * @param {[]} eventsData
@@ -17,8 +23,17 @@ function Calendar() {
         console.log(eventsData);
         const api = calendarRef.current.getApi();
         eventsData.forEach(e => {
-            api.addEvent(e);
+	    const event = {};
+	    event.title = e.dutyName;
+	    const day = new Date(e.day);
+	    setTime(day, e.startTime);
+	    event.start = new Date(day.getTime());
+	    setTime(day, e.endTime);
+	    event.end = day;
+	    console.log(event)
+            api.addEvent(event);
         });
+	eventsRef.current = eventsData;
     }
 
     /**
