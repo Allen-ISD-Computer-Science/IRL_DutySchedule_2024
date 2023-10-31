@@ -19,7 +19,7 @@ function EventModal(props) {
       </Modal.Header>
 	<Modal.Body>
             <p><FontAwesomeIcon icon={faCalendar} /> {props.eventStartDateRef}</p>
-            <p><FontAwesomeIcon icon={faClock} /> {props.eventStartTimeRef}</p>
+            <p><FontAwesomeIcon icon={faClock} /> {props.eventStartTimeRef} - {props.eventEndTimeRef}</p>
             <p><FontAwesomeIcon icon={faMapPin} /> {props.eventLocationRef}</p>
       </Modal.Body>
       <Modal.Footer>

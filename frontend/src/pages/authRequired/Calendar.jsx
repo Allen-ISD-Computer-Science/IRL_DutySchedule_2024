@@ -29,7 +29,10 @@ function CalendarPage() {
     const eventClick = (info) => {
 	console.log(eventsRef.current);
 	const event = eventsRef.current.find(a => {
-	    const day = new Date(a.day);
+	    var dayNums = a.day.split("T")[0].split("-").map(b => parseInt(b));
+	    dayNums[1] = dayNums[1] - 1;
+	    
+	    const day = new Date(...(dayNums));
 	    day.setHours(...(a.startTime.split(":").map(a => parseInt(a))));
 	    console.log(day.toString(), day.getTime())
 	    return a.dutyName == info.event.title && day.getTime() == info.event.start.getTime();

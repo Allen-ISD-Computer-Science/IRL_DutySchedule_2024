@@ -13,7 +13,7 @@ function NavbarComponent() {
 	}).then(response => {
 	    setShowAdmin(!!response)
 	});
-    });
+    }, []);
     
   return (
     <Navbar bg="primary" data-bs-theme="dark">

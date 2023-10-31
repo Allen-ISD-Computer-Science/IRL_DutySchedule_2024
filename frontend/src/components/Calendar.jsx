@@ -24,11 +24,17 @@ function Calendar(props) {
         eventsData.forEach(e => {
 	    const event = {};
 	    event.title = e.dutyName;
-	    const day = new Date(e.day);
+
+	    var dayNums = e.day.split("T")[0].split("-").map(a => parseInt(a));
+	    dayNums[1] = dayNums[1] - 1;
+	    
+	    const day = new Date(...(dayNums));
 	    setTime(day, e.startTime);
 	    event.start = new Date(day.getTime());
+
 	    setTime(day, e.endTime);
 	    event.end = day;
+
 	    console.log(event)
             api.addEvent(event);
         });
