@@ -231,41 +231,43 @@ func routes(_ app: Application) throws {
               .filter(Shift.self, \.$id == shiftId)
               .first()
 
-            let shiftDutyLoc = try await Position.query(on: req.db)
-              .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
-              .join(Location.self, on: \Position.$location.$id == \Location.$id)
-              .filter(Position.self, \.$id == shiftDayPos!.$position.id)
-              .first()
+            if shiftDayPos != nil {
+                
+                let shiftDutyLoc = try await Position.query(on: req.db)
+                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
+                  .filter(Position.self, \.$id == shiftDayPos!.$position.id)
+                  .first()
+                
+                let position = try shiftDayPos!.joined(Position.self)
+                let dayModel = try shiftDayPos!.joined(Day.self)
+                let location = try shiftDutyLoc!.joined(Location.self)
+                let duty = try shiftDutyLoc!.joined(Duty.self)
             
-            let position = try shiftDayPos!.joined(Position.self)
-            let dayModel = try shiftDayPos!.joined(Day.self)
-            let location = try shiftDutyLoc!.joined(Location.self)
-            let duty = try shiftDutyLoc!.joined(Duty.self)
-            
-            let startTime = shift.start
-            let endTime = shift.end
-            let day = dayModel.day
-            let dayOfWeek = dayModel.dayOfWeek
-            let dayType = dayModel.supplementaryJSON
-            let dutyName = duty.name
-            let dutyDescription = duty.description
-            let locationName = location.name
-            let locationDescription = location.description
-
-            let dutiesData = DutiesDataRes.init(
-              startTime: startTime,
-              endTime: endTime,
-              day: day,
-              dayOfWeek: dayOfWeek,
-              dayType: dayType,
-              dutyName: dutyName,
-              dutyDescription: dutyDescription,
-              locationName: locationName,
-              locationDescription: locationDescription
-            )
-
-            dutiesDataRes.append(dutiesData)
-            
+                let startTime = shift.start
+                let endTime = shift.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+                
+                let dutiesData = DutiesDataRes.init(
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription
+                )
+                
+                dutiesDataRes.append(dutiesData)
+            }
         }
         
         return dutiesDataRes

@@ -69,10 +69,76 @@ struct AdminController: RouteCollection {
             try await user.save(on: req.db)
             return user
         }
+
+        struct AdminDutiesDataRes : Content {
+            var shiftID : String
+            var startTime : String
+            var endTime : String
+            var day : Date
+            var dayOfWeek : Int?
+            var dayType : OptionalSupplementaryJSON
+            var dutyName : String
+            var dutyDescription : String
+            var locationName : String
+            var locationDescription : String
+        }
+        
+        adminProtected.get("adminPanel", "duties", "all") { req async throws -> [AdminDutiesDataRes] in
+            var dutiesDataRes = [AdminDutiesDataRes]()
+
+            let shifts = try await Shift.query(on: req.db)
+              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+              .all()
+
+            for shift in shifts {
+            
+                let shiftDutyLoc = try await Position.query(on: req.db)
+                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
+                  .filter(Position.self, \.$id == shift.$position.id)
+                  .first()
+                
+                let shiftModel = try shift.joined(Shift.self)
+                let position = try shift.joined(Position.self)
+                let dayModel = try shift.joined(Day.self)
+                let location = try shiftDutyLoc!.joined(Location.self)
+                let duty = try shiftDutyLoc!.joined(Duty.self)
+
+                let shiftID = shiftModel.externalIDText
+                let startTime = shiftModel.start
+                let endTime = shiftModel.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+                
+                let dutiesData = AdminDutiesDataRes.init(
+                  shiftID: shiftID!,
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription
+                )
+                
+                dutiesDataRes.append(dutiesData)
+            }
+        
+        print("Admin Duties Data Count: \(dutiesDataRes.count)")
+        return dutiesDataRes
         
     }
     
     struct CustomError: Content {
         let error: String
+    }
     }
 }
