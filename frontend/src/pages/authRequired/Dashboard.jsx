@@ -38,7 +38,8 @@ function DashboardPage(props) {
     };
 
     const eventClick = (info) => {
-        console.log(eventsRef.current);
+        if (["A Day", "B Day"].includes(info.event.title)) return;
+
         const event = eventsRef.current.find((a) => {
             var dayNums = a.day
                 .split("T")[0]
