@@ -12,7 +12,7 @@ import UpdateAccount from './pages/UpdateAccount';
 import Forgot from './pages/Forgot';
 
 import Dashboard from './pages/authRequired/Dashboard';
-import Calendar from './pages/authRequired/Calendar';
+import Calendar from './pages/authRequired/CalendarPage';
 
 import Admin from './pages/adminRequired/Admin';
 import Upload from './pages/adminRequired/Upload';

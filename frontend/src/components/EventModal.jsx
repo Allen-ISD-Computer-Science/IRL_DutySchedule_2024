@@ -10,6 +10,7 @@ function EventModal(props) {
 	show={props.showModal}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
+      onHide={props.onHide}
       centered
     >
      <Modal.Header closeButton>
