@@ -84,9 +84,10 @@ extension User {
 
 extension User.Email: Validatable{
     static func validations(_ validations: inout Validations){
-        validations.add("firstName", as: String.self, is:!.empty)
-        validations.add("lastName", as: String.self, is:!.empty)
-        validations.add("email", as: String.self, is:!.empty)
+        validations.add("firstName", as: String.self, is: !.empty)
+        validations.add("lastName", as: String.self, is: !.empty)
+        validations.add("email", as: String.self, is: !.empty)
+        validations.add("email", as: String.self, is: .allenEmail)
     }
 }
 

@@ -22,7 +22,11 @@ struct LoginController: RouteCollection {
 
                     req.headers.add(name: "apiKey", value: TeacherDuty.getEnvString("EMAIL_APIKEY"))
                 }
-                print("Email sent with response of \n   \(response)")
+
+                guard response.status == .ok else {
+                    print(response)
+                    throw Abort(.failedDependency, reason: "Email API failed to process request.")
+                }
             }
 
             // CHECK IF A USER WITH THAT EMAIL ALREADY EXISTS
@@ -90,7 +94,7 @@ struct LoginController: RouteCollection {
                 authenticator.resetToken = randomString(length: 64)
 
                 let emailApi = TeacherDuty.getEnvString("EMAIL_API")
-                let _ = try await req.client.post("\(emailApi)") { req in
+                let response = try await req.client.post("\(emailApi)") { req in
                     let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
                     let emailData = EmailData(contact: contact,
                                               templateName: "cmwModelSchedulerForgotPassword",
@@ -100,6 +104,11 @@ struct LoginController: RouteCollection {
                     try req.content.encode(emailData)
 
                     req.headers.add(name: "apiKey", value: TeacherDuty.getEnvString("EMAIL_APIKEY"))
+                }
+
+                guard response.status == .ok else {
+                    print(response)
+                    throw Abort(.failedDependency, reason: "Email API failed to process request.")
                 }
 
                 try await authenticator.update(on: req.db)

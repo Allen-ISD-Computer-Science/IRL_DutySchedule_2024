@@ -4,7 +4,7 @@ import FluentMySQLDriver
 
 extension Validator where T == String {
     /// Validates whether a `String` is a valid student email address.
-    public static var studentEmail: Validator<T> {
+    public static var allenEmail: Validator<T> {
         .init {
             guard
               let range = $0.range(of: regex, options: [.regularExpression]),
@@ -35,11 +35,11 @@ extension ValidatorResults.studentEmail: ValidatorResult {
     }
     
     public var successDescription: String? {
-        "is a valid student email address"
+        "is a valid allen email address"
     }
     
     public var failureDescription: String? {
-        "is not a valid student email address"
+        "is not a valid allen email address"
     }
 }
 
