@@ -17,6 +17,7 @@
         "bfj": "^8.0.0",
         "bootstrap": "^5.3.1",
         "hoopy": "^0.1.4",
+        "html-react-parser": "^5.0.6",
         "isexe": "^3.1.1",
         "react": "^18.2.0",
         "react-bootstrap": "^2.8.0",

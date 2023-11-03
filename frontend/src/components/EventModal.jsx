@@ -1,8 +1,12 @@
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import parse from 'html-react-parser';
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faClock, faMapPin, faClipboard, faBullhorn } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar, faClock, faMapPin } from '@fortawesome/free-solid-svg-icons'
 
 function EventModal(props) {
   return (
@@ -22,6 +26,10 @@ function EventModal(props) {
             <p><FontAwesomeIcon icon={faCalendar} /> {props.eventStartDateRef}</p>
             <p><FontAwesomeIcon icon={faClock} /> {props.eventStartTimeRef} - {props.eventEndTimeRef}</p>
             <p><FontAwesomeIcon icon={faMapPin} /> {props.eventLocationRef}</p>
+            <details>
+              <summary>Description</summary>
+              {parse(props.eventLocationDescRef)}
+            </details>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>

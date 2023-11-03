@@ -138,6 +138,7 @@ function DashboardPage(props) {
                         eventStartTimeRef={eventStartTime}
                         eventEndTimeRef={eventEndTime}
                         eventLocationRef={eventLocation}
+                        eventLocationDescRef={eventLocationDesc}
                         showModal={eventModalVisibility}
                         onHide={hideEventModal}
                     />
