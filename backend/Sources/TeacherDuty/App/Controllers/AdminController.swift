@@ -71,7 +71,6 @@ struct AdminController: RouteCollection {
         }
 
         struct AdminDutiesDataRes : Content {
-            var shiftID : String
             var startTime : String
             var endTime : String
             var day : Date
@@ -83,31 +82,71 @@ struct AdminController: RouteCollection {
             var locationDescription : String
         }
         
-        adminProtected.get("adminPanel", "duties", "all") { req async throws -> [AdminDutiesDataRes] in
+        struct AdminDutiesDataReq : Content {
+            var from : Date // Date from which you want to start seeking UserShifts
+            var count : Int // Amount of UserShifts you want to be returned after the from date
+        }
+
+        
+        adminProtected.post("adminPanel", "duties", ":userID") { req async throws -> [AdminDutiesDataRes] in
+            let dutiesDataReq = try req.content.decode(AdminDutiesDataReq.self)
             var dutiesDataRes = [AdminDutiesDataRes]()
-
-            let shifts = try await Shift.query(on: req.db)
-              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
-              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
-              .all()
-
-            for shift in shifts {
             
-                let shiftDutyLoc = try await Position.query(on: req.db)
+            guard let userID = req.parameters.get("userID", as: Int.self) else {
+            app.logger.warning("userID does not have a field.")
+            throw Abort(.unauthorized, reason: "userID does not have a field")
+        }
+            guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
+            app.logger.warning("User does not exist")
+            throw Abort(.unauthorized, reason: "User does not exist")
+        }
+            
+
+            let userShifts = try await UserShifts.query(on: req.db)
+              .join(User.self, on: \UserShifts.$user.$id == \User.$id)
+              .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
+              .filter(User.self, \.$id == userID)
+              .limit(dutiesDataReq.count)
+              .all()
+            
+            for userShift in userShifts {
+                let shift = try userShift.joined(Shift.self)
+
+                guard let shiftId = shift.id else {
+                app.logger.warning("Shift does not have id field.")
+                throw Abort(.unauthorized, reason: "Shift does not have id field")
+            }
+                
+                //TODO: filter all of these joins by context
+                guard let shiftDayPos = try await Shift.query(on: req.db)
+                  .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+                  .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+                  .filter(Day.self, \.$day >= dutiesDataReq.from)
+                  .filter(Shift.self, \.$id == shiftId)
+                  .first() else {
+                app.logger.warning("ShiftDayPos error.")
+                throw Abort(.unauthorized, reason: "ShiftDayPos error")
+                
+            }
+                
+                                 
+                guard let shiftDutyLoc = try await Position.query(on: req.db)
                   .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
                   .join(Location.self, on: \Position.$location.$id == \Location.$id)
-                  .filter(Position.self, \.$id == shift.$position.id)
-                  .first()
+                  .filter(Position.self, \.$id == shiftDayPos.$position.id)
+                  .first() else {
+                app.logger.warning("ShiftDutyLoc error.")
+                throw Abort(.unauthorized, reason: "ShiftDutyLoc error")
+            
+            }
                 
-                let shiftModel = try shift.joined(Shift.self)
-                let position = try shift.joined(Position.self)
-                let dayModel = try shift.joined(Day.self)
-                let location = try shiftDutyLoc!.joined(Location.self)
-                let duty = try shiftDutyLoc!.joined(Duty.self)
-
-                let shiftID = shiftModel.externalIDText
-                let startTime = shiftModel.start
-                let endTime = shiftModel.end
+                let position = try shiftDayPos.joined(Position.self)
+                let dayModel = try shiftDayPos.joined(Day.self)
+                let location = try shiftDutyLoc.joined(Location.self)
+                let duty = try shiftDutyLoc.joined(Duty.self)
+            
+                let startTime = shift.start
+                let endTime = shift.end
                 let day = dayModel.day
                 let dayOfWeek = dayModel.dayOfWeek
                 let dayType = dayModel.supplementaryJSON
@@ -117,7 +156,6 @@ struct AdminController: RouteCollection {
                 let locationDescription = location.description
                 
                 let dutiesData = AdminDutiesDataRes.init(
-                  shiftID: shiftID!,
                   startTime: startTime,
                   endTime: endTime,
                   day: day,
@@ -130,15 +168,15 @@ struct AdminController: RouteCollection {
                 )
                 
                 dutiesDataRes.append(dutiesData)
+            
             }
+            
+            return dutiesDataRes
+            
+        }
         
-        print("Admin Duties Data Count: \(dutiesDataRes.count)")
-        return dutiesDataRes
-        
-    }
-    
-    struct CustomError: Content {
-        let error: String
-    }
+        struct CustomError: Content {
+            let error: String
+        }
     }
 }
