@@ -174,6 +174,110 @@ struct AdminController: RouteCollection {
             return dutiesDataRes
             
         }
+
+
+        
+        struct AdminDutiesAvailableDataRes : Content {
+            var shiftID : String
+            var startTime : String
+            var endTime : String
+            var day : Date
+            var dayOfWeek : Int?
+            var dayType : OptionalSupplementaryJSON
+            var dutyName : String
+            var dutyDescription : String
+            var locationName : String
+            var locationDescription : String
+        }
+        
+        struct AdminDutiesAvailableDataReq : Content {
+            var from : Date // Date from which you want to start seeking UserShifts
+            var through : Date
+        }
+        
+        adminProtected.post("adminPanel", "duties", "available", ":userID") { req async throws -> [AdminDutiesAvailableDataRes] in
+            let dutiesDataReq = try req.content.decode(AdminDutiesDataReq.self)
+            var dutiesDataRes = [AdminDutiesAvailableDataRes]()
+            
+            guard let userID = req.parameters.get("userID", as: Int.self) else {
+            app.logger.warning("userID does not have a field.")
+            throw Abort(.unauthorized, reason: "userID does not have a field")
+        }
+            guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
+            app.logger.warning("User does not exist")
+            throw Abort(.unauthorized, reason: "User does not exist")
+        }
+            
+            let shifts = try await Shift.query(on: req.db)
+              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+              .all()
+
+            for shift in shifts {
+
+                guard let shiftInternalID = shift.id else {
+                app.logger.warning("Shift does not have id field.")
+                throw Abort(.unauthorized, reason: "Shift does not have id field")
+            }
+                
+                guard let shiftDayPos = try await Shift.query(on: req.db)
+                  .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+                  .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+                  .filter(Day.self, \.$day >= dutiesDataReq.from)
+                  .filter(Day.self, \.$day <= dutiesDataReq.through)
+                  .filter(Shift.self, \.$id == shiftInternalID)
+                  .first() else {
+                app.logger.warning("ShiftDayPos error.")
+                throw Abort(.unauthorized, reason: "ShiftDayPos error")
+
+            }
+
+
+                guard let shiftDutyLoc = try await Position.query(on: req.db)
+                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
+                  .filter(Position.self, \.$id == shiftDayPos.$position.id)
+                  .first() else {
+                app.logger.warning("ShiftDutyLoc error.")
+                throw Abort(.unauthorized, reason: "ShiftDutyLoc error")
+
+            }
+
+                let position = try shiftDayPos.joined(Position.self)
+                let dayModel = try shiftDayPos.joined(Day.self)
+                let location = try shiftDutyLoc.joined(Location.self)
+                let duty = try shiftDutyLoc.joined(Duty.self)
+
+                let shiftID =  shift.externalIDText
+                let startTime = shift.start
+                let endTime = shift.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+
+                let dutiesData = AdminDutiesAvailableDataRes.init(
+                  shiftID: shiftID!,
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription
+                )
+
+                dutiesDataRes.append(dutiesData)
+            }
+            
+            return dutiesDataRes
+            
+        }
         
         struct CustomError: Content {
             let error: String

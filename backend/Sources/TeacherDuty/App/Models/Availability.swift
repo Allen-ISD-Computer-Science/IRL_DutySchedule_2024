@@ -12,7 +12,7 @@ final class Availability: Model, Content {
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
 
-    @Parent(key: "conextID")
+    @Parent(key: "contextID")
     var context: Context
 
     @Parent(key: "dayID")
