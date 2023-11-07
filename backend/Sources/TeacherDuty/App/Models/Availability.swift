@@ -11,6 +11,9 @@ final class Availability: Model, Content {
 
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
+    
+    @ID(custom: "externalIDText", generatedBy: .database)
+    var externalIDText: String?
 
     @Parent(key: "contextID")
     var context: Context
@@ -19,10 +22,10 @@ final class Availability: Model, Content {
     var day: Day
 
     @Field(key: "startTime")
-    var start: Date
+    var start: Time
 
     @Field(key: "endTime")
-    var end: Date
+    var end: Time
 
     @OptionalField(key: "supplementaryJSON")
     var supplementaryJSON: OptionalSupplementaryJSON

@@ -12,8 +12,11 @@ final class UserAvailability: Model, Content {
     @ID(custom: "externalID", generatedBy: .database)
     var externalID: UUID?
 
+    @ID(custom: "externalIDText", generatedBy: .database)
+    var externalIDText: String?
+
     @Parent(key: "availabilityID")
-    var context: Availability
+    var availability: Availability
 
     @Parent(key: "userID")
     var user: User
@@ -32,6 +35,3 @@ final class UserAvailability: Model, Content {
 }
 
 
-extension UserAvailability: Contextable {
-    static let contextKey = \UserAvailability.$context.$id
-}

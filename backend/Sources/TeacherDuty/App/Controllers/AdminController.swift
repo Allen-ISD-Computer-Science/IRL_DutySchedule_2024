@@ -196,7 +196,7 @@ struct AdminController: RouteCollection {
         }
         
         adminProtected.post("adminPanel", "duties", "available", ":userID") { req async throws -> [AdminDutiesAvailableDataRes] in
-            let dutiesDataReq = try req.content.decode(AdminDutiesDataReq.self)
+            let dutiesDataReq = try req.content.decode(AdminDutiesAvailableDataReq.self)
             var dutiesDataRes = [AdminDutiesAvailableDataRes]()
             
             guard let userID = req.parameters.get("userID", as: Int.self) else {
@@ -207,6 +207,14 @@ struct AdminController: RouteCollection {
             app.logger.warning("User does not exist")
             throw Abort(.unauthorized, reason: "User does not exist")
         }
+
+            let userAvailabilities = try await UserAvailability.query(on: req.db)
+              .join(User.self, on: \UserAvailability.$user.$id == \User.$id)
+              .join(Availability.self, on: \UserAvailability.$availability.$id == \Availability.$id)
+              .filter(User.self, \.$id == userID)
+              .all()
+
+            print("\(userAvailabilities)")
             
             let shifts = try await Shift.query(on: req.db)
               .join(Day.self, on: \Shift.$day.$id == \Day.$id)
