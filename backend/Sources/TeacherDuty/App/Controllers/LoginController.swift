@@ -11,10 +11,11 @@ struct LoginController: RouteCollection {
             //TODO abstract this into email api
             func sendVerifyEmail(token: String?) async throws {
                 let emailApi = TeacherDuty.getEnvString("EMAIL_API")
+                let verifyExternalID = TeacherDuty.getEnvString("VERIFY_EXTERNAL_ID")
                 let response = try await req.client.post("\(emailApi)") { req in
                     let contact = Contact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
                     let emailData = EmailData(contact: contact,
-                                              templateName: "cmwModelSchedulerVerification",
+                                              templateExternalID: verifyExternalID,
                                               templateParameters:
                                                 "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"token\": \"\(token ?? "broken")\"}")
 
@@ -94,10 +95,11 @@ struct LoginController: RouteCollection {
                 authenticator.resetToken = randomString(length: 64)
 
                 let emailApi = TeacherDuty.getEnvString("EMAIL_API")
+                let forgotExternalID = TeacherDuty.getEnvString("FORGOT_EXTERNAL_ID")
                 let response = try await req.client.post("\(emailApi)") { req in
                     let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
                     let emailData = EmailData(contact: contact,
-                                              templateName: "cmwModelSchedulerForgotPassword",
+                                              templateExternalID: forgotExternalID,
                                               templateParameters:
                                                 "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"token\": \"\(authenticator.resetToken ?? "broken")\"}")
 
@@ -196,7 +198,7 @@ struct LoginController: RouteCollection {
     
     struct EmailData: Content {
         let contact: Contact
-        let templateName: String
+        let templateExternalID: String
         let templateParameters: String
     }
     
