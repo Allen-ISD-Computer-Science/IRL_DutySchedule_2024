@@ -25,8 +25,8 @@ CREATE TABLE Availability (
     dayID INT NOT NULL,
     supplementaryJSON JSON NULL DEFAULT NULL,
 
-    startTime TIME NOT NULL,
-    endTime TIME NOT NULL,
+    startTime CHAR(8) NOT NULL, -- Formatted as 01:23:45
+    endTime CHAR(8) NOT NULL,
 
     creationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modificationTimestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -35,6 +35,11 @@ CREATE TABLE Availability (
     CONSTRAINT UK_Availability_externalID UNIQUE (externalID),
     CONSTRAINT FK_Availability_contextID FOREIGN KEY (contextID) REFERENCES Contexts(id),
     CONSTRAINT FK_Availability_dayID FOREIGN KEY (dayID) REFERENCES Days(id),
-    CONSTRAINT CK_Availability_startTime_endTime CHECK (startTime < endTime)
+    CONSTRAINT CK_Availability_startTime_endTime CHECK (startTime < endTime),
+
+    CONSTRAINT CK_Availability_startTime CHECK (LENGTH(startTime) = 8 AND TIME(startTime) IS NOT NULL),
+    CONSTRAINT CK_Availability_endTime CHECK (LENGTH(endTime) = 8 AND TIME(endTime) IS NOT NULL),
+    CONSTRAINT CK_Availability_startTime_endTime CHECK (TIME(startTime) < TIME(endTime))
+
 );
 
