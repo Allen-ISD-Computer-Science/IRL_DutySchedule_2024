@@ -211,70 +211,60 @@ struct AdminController: RouteCollection {
               .filter(User.self, \.$id == userID)
               .all()
 
-            print("\(userAvailabilities)")
-            
             let shifts = try await Shift.query(on: req.db)
               .join(Day.self, on: \Shift.$day.$id == \Day.$id)
               .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+              .filter(Day.self, \.$day >= dutiesDataReq.from)
+              .filter(Day.self, \.$day <= dutiesDataReq.through)
               .all()
 
+            print(shifts.count)
             for shift in shifts {
 
                 guard let shiftInternalID = shift.id else {
                 app.logger.warning("Shift does not have id field.")
                 throw Abort(.unauthorized, reason: "Shift does not have id field")
             }
-                let shiftDayPos = try await Shift.query(on: req.db)
-                  .join(Day.self, on: \Shift.$day.$id == \Day.$id)
-                  .join(Position.self, on: \Shift.$position.$id == \Position.$id)
-                  .filter(Shift.self, \.$id == shiftInternalID)
-                  .filter(Day.self, \.$day >= dutiesDataReq.from)
-                  .filter(Day.self, \.$day <= dutiesDataReq.through)
-                  .first()
-
-                if shiftDayPos != nil {
-                    
-                    guard let shiftDutyLoc = try await Position.query(on: req.db)
+                guard let shiftDutyLoc = try await Position.query(on: req.db)
                         .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
                         .join(Location.self, on: \Position.$location.$id == \Location.$id)
-                        .filter(Position.self, \.$id == shiftDayPos!.$position.id)
+                        .filter(Position.self, \.$id == shift.$position.id)
                         .first() else {
                         app.logger.warning("ShiftDutyLoc error.")
                         throw Abort(.unauthorized, reason: "ShiftDutyLoc error")
 
-                    }
-
-                    let position = try shiftDayPos!.joined(Position.self)
-                    let dayModel = try shiftDayPos!.joined(Day.self)
-                    let location = try shiftDutyLoc.joined(Location.self)
-                    let duty = try shiftDutyLoc.joined(Duty.self)
-                    
-                    let shiftID =  shift.externalIDText
-                    let startTime = shift.start
-                    let endTime = shift.end
-                    let day = dayModel.day
-                    let dayOfWeek = dayModel.dayOfWeek
-                    let dayType = dayModel.supplementaryJSON
-                    let dutyName = duty.name
-                    let dutyDescription = duty.description
-                    let locationName = location.name
-                    let locationDescription = location.description
-                    
-                    let dutiesData = AdminDutiesAvailableDataRes.init(
-                      shiftID: shiftID!,
-                      startTime: startTime,
-                      endTime: endTime,
-                      day: day,
-                      dayOfWeek: dayOfWeek,
-                      dayType: dayType,
-                      dutyName: dutyName,
-                      dutyDescription: dutyDescription,
-                      locationName: locationName,
-                      locationDescription: locationDescription
-                    )
-
-                    dutiesDataRes.append(dutiesData)
                 }
+                
+                let position = try shift.joined(Position.self)
+                let dayModel = try shift.joined(Day.self)
+                let location = try shiftDutyLoc.joined(Location.self)
+                let duty = try shiftDutyLoc.joined(Duty.self)
+                
+                let shiftID =  shift.externalIDText
+                let startTime = shift.start
+                let endTime = shift.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+                
+                let dutiesData = AdminDutiesAvailableDataRes.init(
+                  shiftID: shiftID!,
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription
+                )
+                
+                dutiesDataRes.append(dutiesData)
             }
             return dutiesDataRes
             
