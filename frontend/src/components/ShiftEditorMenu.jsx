@@ -11,16 +11,10 @@ import "./shiftEditorMenu.css";
 function ShiftEditorMenu(props) {
 
     const containerRef = useRef(null);
-    const [shifts, setShifts] = useState([
-        {
-            name: "Monitor",
-            location: "Cafeteria",
-        },
-        {
-            name: "Tutor",
-            location: "Library",
-        }
-    ]);
+    const [didRequestURL, setDidRequestURL] = useState("");
+
+
+    const [shifts, setShifts] = useState([]);
 
     useEffect(() => {
         new Draggable(containerRef.current, {
@@ -28,10 +22,32 @@ function ShiftEditorMenu(props) {
         });
         console.log("Called")
     });
+
+    const getData = (info) => {
+        const requestURL = `${process.env.PUBLIC_URL}/adminPanel/duties/available/${props.userId}-${info.start.toISOString()}-${info.end.toISOString()}`;
+        if (didRequestURL === requestURL) return;
+        setDidRequestURL(requestURL);
+
+        fetch(`${process.env.PUBLIC_URL}/adminPanel/duties/available/${props.userId}`, {
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+                from: info.start.toISOString().split("T")[0] + "T00:00:00Z",
+                through: info.end.toISOString().split(".")[0] + "Z",
+            }),
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                setShifts(json);
+            });
+    };
     
     return (
         <Container className="d-flex justify-content-between align-items-stretch p-2">
-            <Container className="w-25">
+            <Container className="w-25" style={{ overflow: "hidden", maxHeight: "89.5vh" }}>
                 <h1>Shift Editor</h1>
 
                 <h2>Shifts</h2>
@@ -39,9 +55,9 @@ function ShiftEditorMenu(props) {
                     {
                         shifts.map((shift, i) => {
                             return (
-                                <Container key={i} className="shift" id={`shift-${i}`} data-event={`{ "title": "${shift.name} - ${shift.location}", "duration": "02:00" }`}>
-                                    <h3>{shift.name}</h3>
-                                    <p>Location: {shift.location}</p>
+                                <Container key={i} className="shift" id={`shift-${i}`} data-event={`{ "title": "${shift.dutyName} - ${shift.locationName}", "duration": "02:00" }`}>
+                                    <h3>{shift.dutyName}</h3>
+                                    <p>Location: {shift.locationName}</p>
                                 </Container>
                             );
                         })
@@ -71,6 +87,7 @@ function ShiftEditorMenu(props) {
                     }}
                     contentHeight={"auto"}
                     droppable={true}
+                    datesSet={getData}
                 />
             </Container>
         </Container>

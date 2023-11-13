@@ -133,10 +133,13 @@ function Admin() {
 
     const [shiftEditorVisibility, setShiftEditorVisibility] = useState(false);
 
+    const [selectedId, setSelectedId] = useState(0);
+
     const closeShiftEditor = () => setShiftEditorVisibility(false);
     const showShiftEditor = () => setShiftEditorVisibility(true);
 
     const showShifts = (index) => {
+        setSelectedId(teachersData[index].id);
         console.log(teachersData[index]);
         showShiftEditor();
     };
@@ -250,7 +253,9 @@ function Admin() {
                 centered
             >
                 <Modal.Body className="text-center">
-                    <ShiftEditorMenu />
+                    <ShiftEditorMenu
+                        userId={selectedId}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="danger" onClick={closeShiftEditor}>
