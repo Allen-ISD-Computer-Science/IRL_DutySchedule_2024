@@ -50,6 +50,7 @@ SELECT s.id AS shiftID,
 
        pv.locationID,
        pv.locationExternalID,
+       pv.locationExternalIDText,
        pv.locationName,
        pv.locationDescription,
        pv.locationSupplementaryJSON
