@@ -1,3 +1,17 @@
+// Copyright (C) 2023 Muqadam Sabir, Ryan Hallock, Brett Kaplan
+//                    David Ben-Yaakov 
+// This program was developed using codermerlin.academy resources.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see https://www.gnu.org/licenses/.
+
 import Vapor
 import Leaf
 import Fluent
@@ -21,27 +35,19 @@ func configure(_ app: Application) throws {
     
     var tls = TLSConfiguration.makeClientConfiguration()
     tls.certificateVerification = .none
+
+    let globalConfiguration = GlobalConfiguration.cached
     app.databases.use(.mysql(
-                        hostname: getEnvString("MYSQL_HOSTNAME", "db"),
-                        port: Int(getEnvString("MYSQL_PORT", String(MySQLConfiguration.ianaPortNumber)))!, // messy
-                        username: getEnvString("MYSQL_USERNAME"),
-                        password: getEnvString("MYSQL_PASSWORD"),
-                        database: getEnvString("MYSQL_DATABASE_NAME"),
+                        hostname: globalConfiguration.mysqlHostname,
+                        port: globalConfiguration.mysqlPort,
+                        username: globalConfiguration.mysqlUsername,
+                        password: globalConfiguration.mysqlPassword,
+                        database: globalConfiguration.mysqlDatabase,
                         tlsConfiguration: tls
                       ), as: .mysql)
 
-    // Set local port
-    guard let portString = Environment.get("VAPOR_LOCAL_PORT"),
-          let port = Int(portString) else {
-        fatalError("Failed to determine VAPOR LOCAL PORT from environment")
-    }
-    app.http.server.configuration.port = port
-
-    // Set local host
-    guard let hostname = Environment.get("VAPOR_LOCAL_HOST") else {
-        fatalError("Failed to determine VAPOR LOCAL HOST from environment")
-    }
-    app.http.server.configuration.hostname = hostname
+    app.http.server.configuration.hostname = globalConfiguration.vaporLocalHost
+    app.http.server.configuration.port = globalConfiguration.vaporLocalPort
 
     // Reigster Migrations
     //app.migrations.add(User.Migration())
@@ -49,14 +55,4 @@ func configure(_ app: Application) throws {
     // register routes
     try routes(app)
 }
-public func getEnvString(_ path: String, _ defaultReturn: String = "") -> String {
-    guard let variable = Environment.get(path) else {
-        app.logger.warning("Failed to read environment variable: \(path) defaulting to `\(defaultReturn)`")
-        
-        return defaultReturn
-    }
-    
-    return variable
-}
-
     

@@ -7,12 +7,8 @@
   * The frontend will be copied to Vapor for serving
 
 # Running on CoderMerlin
-* Required enviornment variables
-  * MYSQL_HOSTNAME
-  * MYSQL_PORT
-  * MYSQL_DATABASE_NAME
-  * MYSQL_USERNAME
-  * MYSQL_PASSWORD
+* Add required environment variables by copying 'TEMPLATE.env' to '.env' and then defining all values
+* Source the .env file
 * Execute 'run' from the root of the project
 
 # Rebuilding the Frontend

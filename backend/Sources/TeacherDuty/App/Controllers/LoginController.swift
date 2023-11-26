@@ -1,3 +1,16 @@
+// Copyright (C) 2023 Muqadam Sabir, Ryan Hallock, David Ben-Yaakov
+// This program was developed using codermerlin.academy resources.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see https://www.gnu.org/licenses/.
+
 import Fluent
 import Vapor
 
@@ -10,18 +23,17 @@ struct LoginController: RouteCollection {
 
             //TODO abstract this into email api
             func sendVerifyEmail(token: String?) async throws {
-                let emailApi = TeacherDuty.getEnvString("EMAIL_API")
-                let verifyExternalID = TeacherDuty.getEnvString("VERIFY_EXTERNAL_ID")
-                let response = try await req.client.post("\(emailApi)") { req in
+                let tokenURL = GlobalConfiguration.cached.vaporServerPublicURL.appendingPathComponent("verify").appendingPathComponent(token ?? "broken")
+                let response = try await req.client.post(GlobalConfiguration.cached.notificationAPIURI) { req in
                     let contact = Contact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
                     let emailData = EmailData(contact: contact,
-                                              templateExternalID: verifyExternalID,
+                                              templateExternalID: GlobalConfiguration.cached.notificationTemplateID_verifyAccount,
                                               templateParameters:
-                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"token\": \"\(token ?? "broken")\"}")
+                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"tokenURL\": \"\(tokenURL)\"}")
 
                     try req.content.encode(emailData)
 
-                    req.headers.add(name: "apiKey", value: TeacherDuty.getEnvString("EMAIL_APIKEY"))
+                    req.headers.add(name: "apiKey", value: GlobalConfiguration.cached.notificationAPIKey)
                 }
 
                 guard response.status == .ok else {
@@ -40,7 +52,7 @@ struct LoginController: RouteCollection {
                 }
 
                 //User no longer is verfied path
-                let authenticator = user.getPasswordAuthenticator()!
+                let authenticator = user.getPasswordAuthenticator()! // TODO: No banging without protection! This will fail if an account is created but not verified followed by a subsequent attempt to create the account.
 
                 if let updateTime = authenticator.modificationTimestamp, updateTime.distance(to: Date()) > 180 {
                     authenticator.resetToken = randomString(length: 64)
@@ -93,19 +105,21 @@ struct LoginController: RouteCollection {
 
             if let updateTime = authenticator.modificationTimestamp, updateTime.distance(to: Date()) > 180 {
                 authenticator.resetToken = randomString(length: 64)
+                guard let resetToken = authenticator.resetToken else {
+                    throw Abort(.failedDependency, reason: "Internal error, resetToken is not available.") // TODO: Examine error response 
+                }
 
-                let emailApi = TeacherDuty.getEnvString("EMAIL_API")
-                let forgotExternalID = TeacherDuty.getEnvString("FORGOT_EXTERNAL_ID")
-                let response = try await req.client.post("\(emailApi)") { req in
+                let response = try await req.client.post(GlobalConfiguration.cached.notificationAPIURI) { req in
+                    let tokenURL = GlobalConfiguration.cached.vaporServerPublicURL.appendingPathComponent("forgotpassword").appendingPathComponent(resetToken)
                     let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
                     let emailData = EmailData(contact: contact,
-                                              templateExternalID: forgotExternalID,
+                                              templateExternalID: GlobalConfiguration.cached.notificationTemplateID_forgotPassword,
                                               templateParameters:
-                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"token\": \"\(authenticator.resetToken ?? "broken")\"}")
+                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"tokenURL\": \"\(tokenURL)\"}")
 
                     try req.content.encode(emailData)
 
-                    req.headers.add(name: "apiKey", value: TeacherDuty.getEnvString("EMAIL_APIKEY"))
+                    req.headers.add(name: "apiKey", value: GlobalConfiguration.cached.notificationAPIKey)
                 }
 
                 guard response.status == .ok else {
