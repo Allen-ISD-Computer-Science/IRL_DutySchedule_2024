@@ -11,7 +11,7 @@ function NavbarComponent() {
 	fetch("./userPermission", {
 	    method: "GET"
 	}).then(response => {
-	    setShowAdmin(!!response)
+	    setShowAdmin(response === "1")
 	});
     }, []);
     
