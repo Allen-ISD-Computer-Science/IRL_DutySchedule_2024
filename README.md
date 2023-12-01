@@ -1,14 +1,14 @@
 # AHSConferencesApp
 Allow Allen ISD teachers and administrators to manage conference periods
 
-Sai - Product manager
+- Sai - Product manager
 
-Jishnu- Project manager
+- Jishnu- Project manager
 
-Pranav - Database
+- Pranav - Database
 
-Jakob- Security
+- Jakob - Security
 
-Ryan- Software Engineer
+- Software Engineer, Ryan Hallock, [@ryanhallock](https://github.com/ryanhallock), [Digital Portfolio](https://codermerlin.academy/users/ryan-hallock/Digital%20Portfolio/)
 
 *Everyone also is a software engineer
