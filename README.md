@@ -5,7 +5,7 @@ Allow Allen ISD teachers and administrators to manage conference periods
 
 - Jishnu- Project manager
 
-- Pranav - Front End Developer [Digital Portfolio](https://codermerlin.academy/users/pranav-krishnan/Digital%20Portfolio/)
+- Pranav - Front End Developer [Digital Portfolio](https://codermerlin.academy/users/pranav-krishnan/Digital%20Portfolio/index.html)
 
 - Jakob - Security
 
