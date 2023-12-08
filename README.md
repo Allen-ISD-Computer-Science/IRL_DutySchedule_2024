@@ -14,4 +14,6 @@ Allow Allen ISD teachers and administrators to manage conference periods. Our go
 
 - Software Engineer, Ryan Hallock, [@ryanhallock](https://github.com/ryanhallock), [Digital Portfolio](https://codermerlin.academy/users/ryan-hallock/Digital%20Portfolio/)
 
+- Frontend Software Engineer, Brett K, [@brett-k-cs](https://github.com/brett-k-cs), [Digital Portfolio](https://codermerlin.academy/users/brett-kaplan/Digital%20Portfolio/index.html)
+
 *Everyone also is a software engineer
