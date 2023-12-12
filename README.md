@@ -16,4 +16,6 @@ Allow Allen ISD teachers and administrators to manage conference periods. Our go
 
 - Frontend Software Engineer, Brett K, [@brett-k-cs](https://github.com/brett-k-cs), [Digital Portfolio](https://codermerlin.academy/users/brett-kaplan/Digital%20Portfolio/index.html)
 
+- Software Engineer, Muqadam Sabir, [@Muq2](https://github.com/muq2), [Digital Portfolio](https://codermerlin.academy/users/muqadam-sabir/Digital%20Portfolio/)
+
 *Everyone also is a software engineer
