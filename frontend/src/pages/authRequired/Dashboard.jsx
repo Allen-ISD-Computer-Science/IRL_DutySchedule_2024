@@ -1,8 +1,9 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+    faCalendarPlus,
     faCalendar,
     faClock,
     faMapPin,
@@ -29,12 +30,15 @@ function DashboardPage(props) {
     const [eventLocationDesc, setEventLocationDesc] = React.useState("");
     const showEventModal = () => setEventModalVisibility(true);
     const hideEventModal = () => setEventModalVisibility(false);
-
+    
     const eventsRef = React.useRef({});
     const getTime = (time) => {
         const d = new Date();
         d.setHours(...time.split(":").map((a) => parseInt(a)));
         return d.toLocaleTimeString();
+    };
+    const handleAddToCalendar = () => {
+	    console.log("Adding to calendar");
     };
 
     const eventClick = (info) => {
@@ -102,6 +106,8 @@ function DashboardPage(props) {
                         <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
                             <h4> Your Next duty:</h4>
                             <br></br>
+			    <Container>
+
                             <h3>
                                 <FontAwesomeIcon icon={faClipboard} />{" "}
                                 {props.nextDutyName || " Bus Duty"}
@@ -119,10 +125,18 @@ function DashboardPage(props) {
                                 <FontAwesomeIcon icon={faMapPin} />{" "}
                                 {props.nextDutyLocation || " PAC"}
                             </p>
-
+			    
                         
                                     
-                        </Container>
+				<Button
+				    className="add-to-calendar-button"
+				    variant="primary"
+				    onClick={handleAddToCalendar}
+				>
+				    <FontAwesomeIcon icon={faCalendarPlus} /> Add to Calendar
+				</Button>
+			    </Container>
+			</Container>
 
                         <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
                             <Calendar
