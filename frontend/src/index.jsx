@@ -43,11 +43,11 @@ const router = createBrowserRouter([
     element: <UpdateAccount />,
   },
   {
-    path: "/updateAccount",
+    path: "/forgotPassword",
     element: <UpdateAccount />,
   },
   {
-    path: "/updateAccount/*",
+    path: "/forgotPassword/*",
     element: <UpdateAccount />,
   },
   {
