@@ -139,7 +139,7 @@ function UpdateAccount() {
                                             className="btn-block mb-4"
                                             type="submit"
                                         >
-                                            Register
+                                            Update Password
                                         </Button>
 
                                         <div className="text-center">
