@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faCalendarPlus,
     faCalendar,
-    faClock,
+    faHourglassStart,
+    faHourglassEnd,
     faMapPin,
     faClipboard,
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +19,7 @@ import EventModal from "../../components/EventModal";
 // RCE CSS
 import 'react-chat-elements/dist/main.css'
 import { ChatItem } from 'react-chat-elements'
-//import { AddToCalendarButton } from 'add-to-calendar-button-react';
+import { AddToCalendarButton } from 'add-to-calendar-button-react';
 function DashboardPage(props) {
     const [eventModalVisibility, setEventModalVisibility] =
         React.useState(false);
@@ -109,8 +110,7 @@ function DashboardPage(props) {
 			    <Container>
 
                             <h3>
-                                <FontAwesomeIcon icon={faClipboard} />{" "}
-                                {props.nextDutyName || " Bus Duty"}
+                              <b> {props.nextDutyName || "Bus Duty"} </b>
                             </h3>
                             <br></br>
                             <p>
@@ -118,8 +118,12 @@ function DashboardPage(props) {
                                 {props.nextDutyDate || " 01/02/2025"}
                             </p>
                             <p>
-                                <FontAwesomeIcon icon={faClock} />{" "}
-                                {props.nextDutyTime || " 4:00-5:00 PM"}
+                                <FontAwesomeIcon icon={faHourglassStart} />{" "}
+                                {props.nextDutyStartTime || " 4:00 PM"}
+                            </p>
+                             <p>
+                                <FontAwesomeIcon icon={faHourglassEnd} />{" "}
+                                {props.nextDutyEndTime || " 5:00 PM"}
                             </p>
                             <p>
                                 <FontAwesomeIcon icon={faMapPin} />{" "}
@@ -128,14 +132,17 @@ function DashboardPage(props) {
 			    
                         
                                     
-				<Button
-				    className="add-to-calendar-button"
-				    variant="primary"
-				    onClick={handleAddToCalendar}
-				>
-				    <FontAwesomeIcon icon={faCalendarPlus} /> Add to Calendar
-				</Button>
-			    </Container>
+				
+				</Container>
+<AddToCalendarButton
+  name= {props.nextDutyName || "Bus Duty"}
+  options={['Outlook.com','Google','Apple', 'iCal']}
+  location={props.nextDutyLocation || "PAC"}
+  startDate={props.nextDutyDate || "2025-01-02"}
+  startTime={props.nextDutyStartTime || "16:00"}
+  endTime={props.nextDutyEndTime || "17:00"}
+  timeZone="America/Chicago"
+></AddToCalendarButton>
 			</Container>
 
                         <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
