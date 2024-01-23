@@ -1,14 +1,12 @@
 import React from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faCalendarPlus,
     faCalendar,
     faHourglassStart,
     faHourglassEnd,
     faMapPin,
-    faClipboard,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./calendar.css";
@@ -37,9 +35,6 @@ function DashboardPage(props) {
         const d = new Date();
         d.setHours(...time.split(":").map((a) => parseInt(a)));
         return d.toLocaleTimeString();
-    };
-    const handleAddToCalendar = () => {
-	    console.log("Adding to calendar");
     };
 
     const eventClick = (info) => {

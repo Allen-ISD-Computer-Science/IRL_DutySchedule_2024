@@ -48,13 +48,16 @@ function Calendar(props) {
 
     const addABDayEvents = () => {
         const api = calendarRef.current.getApi();
-        
+
         dayInfoRef.current.forEach((info) => {
-            if (info.supplementaryJSON.abDay !== "A" && info.supplementaryJSON.abDay !== "B") return;
-            
-            const color = info.supplementaryJSON.abDay === "A"
-                        ? "#c03a2a"
-                        : "#161b5f"
+            if (
+                info.supplementaryJSON.abDay !== "A" &&
+                info.supplementaryJSON.abDay !== "B"
+            )
+                return;
+
+            const color =
+                info.supplementaryJSON.abDay === "A" ? "#c03a2a" : "#161b5f";
 
             const event = {};
             event.title = info.supplementaryJSON.abDay + " Day";
@@ -70,11 +73,11 @@ function Calendar(props) {
 
             event.backgroundColor = color;
             event.textColor = "white";
-            event.className = ["text-center"]
+            event.className = ["text-center"];
 
             api.addEvent(event);
         });
-    }
+    };
 
     /**
      * @param {DayCellContentArg} info
@@ -173,7 +176,13 @@ function Calendar(props) {
                 className="d-block"
                 themeSystem="bootstrap5"
                 plugins={[timeGridPlugin]}
-                initialView="timeGridWeek"
+                initialView="timeGridCustom"
+                views={{
+                    timeGridCustom: {
+                        type: "timeGrid",
+                        duration: { days: props.duration || 7 },
+                    },
+                }}
                 hiddenDays={[0, 6]}
                 nowIndicator={true}
                 slotMinTime={"06:00:00"}

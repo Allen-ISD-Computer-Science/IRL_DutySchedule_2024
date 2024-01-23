@@ -16,6 +16,7 @@ import Calendar from './pages/authRequired/CalendarPage';
 
 import Admin from './pages/adminRequired/Admin';
 import Upload from './pages/adminRequired/Upload';
+import AdminCalendar from './pages/adminRequired/AdminCalendar';
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
     path: "/adminPanel/upload",
     element: <Upload />,
   },
+  {
+    path: "/adminPanel/calendar",
+    element: <AdminCalendar />,
+  }
 ],
 {
   basename: process.env.PUBLIC_URL ? `${process.env.PUBLIC_URL}/` : "/",

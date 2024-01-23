@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, Container, Modal } from "react-bootstrap";
 
 import AdminNavbar from "../../components/AdminNavbar";

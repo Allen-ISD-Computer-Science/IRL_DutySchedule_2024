@@ -12,6 +12,7 @@ function AdminNavbarComponent(props) {
             <Nav className="me-auto">
                 <Nav.Link href={selected === "home" ? "#" : "../adminPanel"}>Home</Nav.Link>
                 <Nav.Link href={selected === "upload" ? "#" : "./adminPanel/upload"}>Upload</Nav.Link>
+                <Nav.Link href={selected === "calendar" ? "#" : "./adminPanel/calendar"}>Calendar</Nav.Link>
             </Nav>
         </Container>
     </Navbar>
