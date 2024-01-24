@@ -314,6 +314,10 @@ func routes(_ app: Application) throws {
        return try await renderIndex(req)
     }
     
+    adminProtected.get("adminPanel", "calendar") { req in
+        return try await renderIndex(req)
+    }
+    
     /// END CORE SITE ENDPOINTS
 
     try app.register(collection: LoginController())
