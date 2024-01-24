@@ -96,39 +96,52 @@ function DashboardPage(props) {
                     title={'Announcement'}
                     subtitle= {props.announcement || " There is no school on 01/01/2025 "}
                     date={new Date()}
-                    unread={1}
-                    />
+			unread={1}
+		    />
+			    useEffect(() => {
 
-                        <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
-                            <h4> Your Next duty:</h4>
-                            <br></br>
-			    <Container>
+			fetch(process.env.PUBLIC_URL + "/duties/user/count", {
+    headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+        from: new Date().toISOString().split("T")[0] + "T00:00:00Z",
+        count: 1
+    }),
+})
+    .then((response) => response.json())
+    .then((json) => {
+        updateDutyInformation(json);
+   
+}, []);
+// Function to update duty information in the UI
+function updateDutyInformation(data) {
+        // Update HTML content with duty information
 
-                            <h3>
-                              <b> {props.nextDutyName || "Bus Duty"} </b>
-                            </h3>
-                            <br></br>
-                            <p>
-                                <FontAwesomeIcon icon={faCalendar} />{" "}
-                                {props.nextDutyDate || " 01/02/2025"}
-                            </p>
-                            <p>
-                                <FontAwesomeIcon icon={faHourglassStart} />{" "}
-                                {props.nextDutyStartTime || " 4:00 PM"}
-                            </p>
-                             <p>
-                                <FontAwesomeIcon icon={faHourglassEnd} />{" "}
-                                {props.nextDutyEndTime || " 5:00 PM"}
-                            </p>
-                            <p>
-                                <FontAwesomeIcon icon={faMapPin} />{" "}
-                                {props.nextDutyLocation || " PAC"}
-                            </p>
-			    
-                        
-                                    
-				
-				</Container>
+    document.getElementById("nextDutyName").innerHTML = data.nextDutyName || "Bus Duty";
+    document.getElementById("nextDutyDate").innerHTML = data.nextDutyDate || "01/02/2025";
+    document.getElementById("nextDutyStartTime").innerHTML = data.nextDutyStartTime || "4:00 PM";
+    document.getElementById("nextDutyEndTime").innerHTML = data.nextDutyEndTime || "5:00 PM";
+    document.getElementById("nextDutyLocation").innerHTML = data.nextDutyLocation || "PAC";
+}
+			 <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
+            <h4>Your Next duty:</h4>
+            <br></br>
+            <Container>
+                <h3><b id="nextDutyName">Bus Duty</b></h3>
+                <br></br>
+                <p><FontAwesomeIcon icon={faCalendar} /> <span id="nextDutyDate">01/02/2025</span></p>
+                <p><FontAwesomeIcon icon={faHourglassStart} /> <span id="nextDutyStartTime">4:00 PM</span></p>
+                <p><FontAwesomeIcon icon={faHourglassEnd} /> <span id="nextDutyEndTime">5:00 PM</span></p>
+                <p><FontAwesomeIcon icon={faMapPin} /> <span id="nextDutyLocation">PAC</span></p>
+            </Container>
+        </Container>
+    );
+}
+
+                   
 <AddToCalendarButton
   name= {props.nextDutyName || "Bus Duty"}
   options={['Outlook.com','Google','Apple', 'iCal']}
