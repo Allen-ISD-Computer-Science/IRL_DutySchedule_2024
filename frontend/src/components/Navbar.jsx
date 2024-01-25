@@ -10,9 +10,14 @@ function NavbarComponent() {
     useEffect(() => {
 	fetch("./userPermission", {
 	    method: "GET"
-	}).then(response => {
-	    setShowAdmin(response === "1")
-	});
+	}).then(response => response.json())
+	    .then(data => {
+		console.log("API Data:", data);
+		setShowAdmin(data === 1);
+	    })
+	    .catch(error => {
+		console.error("API Error:", error);
+	    });
     }, []);
     
   return (

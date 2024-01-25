@@ -279,7 +279,7 @@ func routes(_ app: Application) throws {
 
         guard let userId = user.id else {
             app.logger.warning("User `\(user.email)` does not have id field.")
-            return 0 // How?
+            return 0// How?
         }
 
         guard let adminRoleId = try await Role.adminRole(on: req.db).id else {
