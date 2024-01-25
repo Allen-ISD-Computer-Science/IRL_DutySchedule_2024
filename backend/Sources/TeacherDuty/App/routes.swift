@@ -330,15 +330,3 @@ func routes(_ app: Application) throws {
 struct CustomError: Content {
     let error: String
 }
-
-struct Contact: Content {
-    let firstName: String
-    let lastName: String
-    let emailAddress: String
-}
-
-struct EmailData: Content {
-    let contact: Contact
-    let templateName: String
-    let templateParameters: String
-}

@@ -21,27 +21,6 @@ struct LoginController: RouteCollection {
             try User.Email.validate(content: req)
             let create = try req.content.decode(User.Email.self)
 
-            //TODO abstract this into email api
-            func sendVerifyEmail(token: String?) async throws {
-                let tokenURL = GlobalConfiguration.cached.vaporServerPublicURL.appendingPathComponent("verify").appendingPathComponent(token ?? "broken")
-                let response = try await req.client.post(GlobalConfiguration.cached.notificationAPIURI) { req in
-                    let contact = Contact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
-                    let emailData = EmailData(contact: contact,
-                                              templateExternalID: GlobalConfiguration.cached.notificationTemplateID_verifyAccount,
-                                              templateParameters:
-                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"tokenURL\": \"\(tokenURL)\"}")
-
-                    try req.content.encode(emailData)
-
-                    req.headers.add(name: "apiKey", value: GlobalConfiguration.cached.notificationAPIKey)
-                }
-
-                guard response.status == .ok else {
-                    print(response)
-                    throw Abort(.failedDependency, reason: "Email API failed to process request.")
-                }
-            }
-
             // CHECK IF A USER WITH THAT EMAIL ALREADY EXISTS
             let userExist = try await User.query(on: req.db).filter(\.$email == create.email).with(\.$authenticators).first()
 
@@ -52,19 +31,30 @@ struct LoginController: RouteCollection {
                 }
 
                 //User no longer is verfied path
-                let authenticator = user.getPasswordAuthenticator()! // TODO: No banging without protection! This will fail if an account is created but not verified followed by a subsequent attempt to create the account.
+                let authenticator = user.getPasswordAuthenticator()!
 
-                if let updateTime = authenticator.modificationTimestamp, updateTime.distance(to: Date()) > 180 {
-                    authenticator.resetToken = randomString(length: 64)
-
-                    try await sendVerifyEmail(token: authenticator.resetToken)
-
-                    try await authenticator.update(on: req.db)
-
-                    return LoginError(error: "Another email has been sent, click the link in your email to proceed.")
+                if let resetTimestamp = authenticator.resetTimestamp, resetTimestamp.distance(to: Date()) < 180 {
+                    return LoginError(error: "Please wait 3 minutes before trying again.")
                 }
 
-                return LoginError(error: "Please wait 3 minutes before trying again.")
+                authenticator.resetToken = randomString(length: 64)
+                authenticator.resetTimestamp = Date()
+
+                guard let verifyToken = authenticator.resetToken else {
+                    throw Abort(.failedDependency, reason: "Internal error, verifyToken is not available.") // TODO: Examine error response
+                }
+
+                let contact = EmailContact(firstName: user.firstName, lastName: user.lastName, emailAddress: user.email)
+                let verifyEmail = TokenURLEmail(pathComponet: "verify", token: verifyToken).createContent(with: contact)
+                let emailData = EmailData(contact: contact,
+                                          templateExternalID: GlobalConfiguration.cached.notificationTemplateID_verifyAccount,
+                                          templateParameters: verifyEmail)
+
+                try await GlobalEmailAPI.sendEmail(from: req, with: emailData)
+
+                try await authenticator.update(on: req.db)
+
+                return LoginError(error: "Another email has been sent, click the link in your email to proceed.")
             }
 
 
@@ -72,12 +62,23 @@ struct LoginController: RouteCollection {
             user.firstName = create.firstName
             user.lastName = create.lastName
             user.email = create.email
-//            user.$role.id = try await Role.defaultRole(on: req.db).id! // default role, querrys db too!
+            //            user.$role.id = try await Role.defaultRole(on: req.db).id! // default role, querrys db too!
 
             let authenticator = UserAuthentication()
             authenticator.resetToken = randomString(length: 64)
+            authenticator.resetTimestamp = Date()
 
-            try await sendVerifyEmail(token: authenticator.resetToken)
+            guard let verifyToken = authenticator.resetToken else {
+                throw Abort(.failedDependency, reason: "Internal error, verifyToken is not available.") // TODO: Examine error response
+            }
+
+            let contact = EmailContact(firstName: user.firstName, lastName: user.lastName, emailAddress: user.email)
+            let verifyEmail = TokenURLEmail(pathComponet: "verify", token: verifyToken).createContent(with: contact)
+            let emailData = EmailData(contact: contact,
+                                      templateExternalID: GlobalConfiguration.cached.notificationTemplateID_verifyAccount,
+                                      templateParameters: verifyEmail)
+
+            try await GlobalEmailAPI.sendEmail(from: req, with: emailData)
 
             // Create user and authenticator
             try await user.create(on: req.db)
@@ -103,36 +104,29 @@ struct LoginController: RouteCollection {
                 return LoginError(error: "User is not active, please try registering again.")
             }
 
-            if let updateTime = authenticator.modificationTimestamp, updateTime.distance(to: Date()) > 180 {
-                authenticator.resetToken = randomString(length: 64)
-                guard let resetToken = authenticator.resetToken else {
-                    throw Abort(.failedDependency, reason: "Internal error, resetToken is not available.") // TODO: Examine error response 
-                }
-
-                let response = try await req.client.post(GlobalConfiguration.cached.notificationAPIURI) { req in
-                    let tokenURL = GlobalConfiguration.cached.vaporServerPublicURL.appendingPathComponent("forgotpassword").appendingPathComponent(resetToken)
-                    let contact = Contact(firstName: "", lastName: "", emailAddress: create.email)
-                    let emailData = EmailData(contact: contact,
-                                              templateExternalID: GlobalConfiguration.cached.notificationTemplateID_forgotPassword,
-                                              templateParameters:
-                                                "{\"firstName\": \"\(create.firstName)\", \"lastName\": \"\(create.lastName)\", \"tokenURL\": \"\(tokenURL)\"}")
-
-                    try req.content.encode(emailData)
-
-                    req.headers.add(name: "apiKey", value: GlobalConfiguration.cached.notificationAPIKey)
-                }
-
-                guard response.status == .ok else {
-                    print(response)
-                    throw Abort(.failedDependency, reason: "Email API failed to process request.")
-                }
-
-                try await authenticator.update(on: req.db)
-
-                return LoginError(error: "Email has been sent, click the link in your email to proceed.")
+            if let resetTimestamp = authenticator.resetTimestamp, resetTimestamp.distance(to: Date()) < 180 {
+                return LoginError(error: "Please wait 3 minutes before trying again.")
             }
 
-            return LoginError(error: "Please wait 3 minutes before trying again.")
+            authenticator.resetToken = randomString(length: 64)
+            authenticator.resetTimestamp = Date()
+
+            guard let resetToken = authenticator.resetToken else {
+                throw Abort(.failedDependency, reason: "Internal error, resetToken is not available.") // TODO: Examine error response
+            }
+
+            let contact = EmailContact(firstName: create.firstName, lastName: create.lastName, emailAddress: create.email)
+            let forgotEmail = TokenURLEmail(pathComponet: "forgotPassword", token: resetToken).createContent(with: contact)
+            let emailData = EmailData(contact: contact,
+                                      templateExternalID: GlobalConfiguration.cached.notificationTemplateID_forgotPassword,
+                                      templateParameters: forgotEmail)
+
+            try await GlobalEmailAPI.sendEmail(from: req, with: emailData)
+
+
+            try await authenticator.update(on: req.db)
+
+            return LoginError(error: "Email has been sent, click the link in your email to proceed.")
         }
 
         routes.post("verify") { req -> LoginError in
@@ -203,19 +197,28 @@ struct LoginController: RouteCollection {
     struct LoginError: Content {
         let error: String
     }
-    
-    struct Contact: Content {
-        let firstName: String
-        let lastName: String
-        let emailAddress: String
-    }
-    
-    struct EmailData: Content {
-        let contact: Contact
-        let templateExternalID: String
-        let templateParameters: String
-    }
-    
-    
 
+
+    struct TokenURLEmail: EmailContactConsumer {
+        private struct TokenURLEmailWrapper: Encodable {
+            let firstName: String?
+            let lastName: String?
+            let tokenURL: URL
+        }
+
+        let tokenURL: URL
+
+        init(pathComponet: String, token: String) {
+            self.tokenURL = GlobalConfiguration.cached.vaporServerPublicURL
+              .appendingPathComponent(pathComponet)
+              .appendingPathComponent(token)
+        }
+
+        func createContent(with contact: EmailContact) -> Encodable {
+            return TokenURLEmailWrapper(firstName: contact.firstName,
+                                        lastName: contact.lastName,
+                                        tokenURL: self.tokenURL
+            )
+        }
+    }
 }
