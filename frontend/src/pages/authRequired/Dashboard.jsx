@@ -107,15 +107,20 @@ function DashboardPage(props) {
     },
     method: "POST",
     body: JSON.stringify({
-        from: new Date().toISOString().split("T")[0] + "T00:00:00Z",
-        count: 1
+        from: newDate(),
+        count: 1,
     }),
 })
     .then((response) => response.json())
     .then((json) => {
         updateDutyInformation(json);
    
-}, []);
+             });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 // Function to update duty information in the UI
 function updateDutyInformation(data) {
         // Update HTML content with duty information
