@@ -25,7 +25,7 @@ SELECT s.id AS shiftID,
        s.positionID AS shiftPositionID,
        s.startTime AS shiftStartTime,
        s.endTime AS shiftEndTime,
-       s.supplementaryJSON AS shiftSupplemnetaryJSON,
+       s.supplementaryJSON AS shiftSupplementaryJSON,
 
        us.id AS userShiftID,
        us.externalID AS userShiftExternalID,
