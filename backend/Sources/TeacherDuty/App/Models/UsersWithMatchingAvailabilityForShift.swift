@@ -6,8 +6,8 @@ import FluentMySQLDriver
 final class UsersWithMatchingAvailabilityForShift: Model, Content {
     static let schema = "UsersWithMatchingAvailabilityForShift_WithID"
 
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: "id", generatedBy: .database)
+    var id: Int?
     
     @Field(key: "shiftID")
     var shiftID: Int
