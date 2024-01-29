@@ -3,7 +3,7 @@ import Fluent
 import FluentMySQLDriver
 
 final class ShiftAvailabilityStatus: Model, Content {
-    static let schema = "ShiftAvailabilityStatus"
+    static let schema = "ShiftAvailabilityStatus_New"
 
     @ID(key: .id)
     var id: UUID?
