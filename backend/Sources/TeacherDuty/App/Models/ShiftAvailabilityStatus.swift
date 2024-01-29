@@ -41,7 +41,7 @@ final class ShiftAvailabilityStatus: Model, Content {
     @Field(key: "userShiftExternalIDText")
     var userExternalIDText: String
 
-    @Field(key: "userShiftxUserID")
+    @Field(key: "userShiftUserID")
     var userShiftUserID: Int
 
     @OptionalField(key: "userShiftSupplementaryJSON")
