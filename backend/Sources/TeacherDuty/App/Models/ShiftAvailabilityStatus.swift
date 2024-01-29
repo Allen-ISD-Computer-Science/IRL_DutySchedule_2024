@@ -35,10 +35,10 @@ final class ShiftAvailabilityStatus: Model, Content {
     @Field(key: "userShiftID")
     var userShiftID: Int
 
-    @Field(key: "userExternalID")
+    @Field(key: "userShiftExternalID")
     var userExternalID: UUID?
 
-    @Field(key: "userExternalIDText")
+    @Field(key: "userShiftExternalIDText")
     var userExternalIDText: String
 
     @Field(key: "userShiftUserID")
