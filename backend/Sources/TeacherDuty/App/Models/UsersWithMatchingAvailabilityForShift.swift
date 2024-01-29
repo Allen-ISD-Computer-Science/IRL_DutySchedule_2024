@@ -1,9 +1,10 @@
+
 import Vapor
 import Fluent
 import FluentMySQLDriver
 
 final class UsersWithMatchingAvailabilityForShift: Model, Content {
-    static let schema = "UsersWithMatchingAvailabilityForShift"
+    static let schema = "UsersWithMatchingAvailabilityForShift_WithID"
 
     @ID(key: .id)
     var id: UUID?

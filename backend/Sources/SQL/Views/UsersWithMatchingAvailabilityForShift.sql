@@ -18,7 +18,9 @@
 -- ================================================================================================
 CREATE VIEW UsersWithMatchingAvailabilityForShift
 AS 
-SELECT sv.shiftID,
+SELECT
+    ROW_NUMBER() OVER (ORDER BY a.id) AS id,
+sv.shiftID,
        sv.shiftExternalID,
        sv.shiftExternalIDText,
        sv.shiftStartTime,
