@@ -124,10 +124,10 @@ final class UsersWithMatchingAvailabilityForShift: Model, Content {
     var availabilityEndTime: String
     
     @Field(key: "userID")
-    var userID: Int
+    var userID: Int?
     
     @Field(key: "userExternalID")
-    var userExternalID: UUID
+    var userExternalID: UUID?
     
     @OptionalField(key: "userExternalIDText")
     var userExternalIDText: String?

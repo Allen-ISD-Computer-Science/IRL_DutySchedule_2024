@@ -33,16 +33,16 @@ final class ShiftAvailabilityStatus: Model, Content {
     var shiftSupplementaryJSON: OptionalSupplementaryJSON
 
     @Field(key: "userShiftID")
-    var userShiftID: Int
+    var userShiftID: Int?
 
     @Field(key: "userShiftExternalID")
     var userExternalID: UUID?
 
     @Field(key: "userShiftExternalIDText")
-    var userExternalIDText: String
+    var userExternalIDText: String?
 
     @Field(key: "userShiftUserID")
-    var userShiftUserID: Int
+    var userShiftUserID: Int?
 
     @OptionalField(key: "userShiftSupplementaryJSON")
     var userShiftSupplementaryJSON: OptionalSupplementaryJSON
