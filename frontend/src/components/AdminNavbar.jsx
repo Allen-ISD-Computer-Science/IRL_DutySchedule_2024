@@ -9,7 +9,7 @@ function AdminNavbarComponent(props) {
   return (
     <Navbar bg="primary" data-bs-theme="dark">
         <Container>
-            <Navbar.Brand href="./adminPanel">AHS DutyDashboard | Admin</Navbar.Brand>
+            <Navbar.Brand href={process.env.PUBLIC_URL + "/adminPanel"}>AHS DutyDashboard | Admin</Navbar.Brand>
             <Nav className="me-auto">
                 <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel"}>Home</Nav.Link>
                 <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel/upload"}>Upload</Nav.Link>
