@@ -5,32 +5,33 @@ public typealias SupplementaryJSON = [Key: String]
 public typealias OptionalSupplementaryJSON = SupplementaryJSON?
 
 extension SupplementaryJSON {
+    enum SupplementaryJSONError: Error {
+        case keyNotFound(_ key: String)
+        case keyCannotCast(to: LosslessStringConvertible.Type)
+    }
+
     func has(_ key: Key) -> Bool {
         return self[key] != nil
     }
 
-    func isBool(_ key: Key) -> Bool {
-        guard has(key), let value = self[key] else {
+    func isType(key: Key, type: LosslessStringConvertible.Type) -> Bool {
+        guard let _ = try? asType(key: key, type) else { // Will also fail if key not found
             return false
         }
 
-        return Bool(value) != nil
+        return true
     }
 
-    func asBool(_ key: Key) -> Bool {
-        return Bool(self[key]!)!
-    }
-
-    func isInt(_ key: Key) -> Bool {
-        guard has(key), let value = self[key] else {
-            return false
+    func asType<T: LosslessStringConvertible>(key: Key, _ type: T.Type) throws -> T {
+        guard let value = self[key] else {
+            throw SupplementaryJSONError.keyNotFound(key)
         }
 
-        return Int(value) != nil
-    }
+        guard let typedValue = type.init(value) else {
+            throw SupplementaryJSONError.keyCannotCast(to: type)
+        }
 
-    func asInt(_ key: Key) -> Int {
-        return Int(self[key]!)!
+        return typedValue
     }
 }
 
