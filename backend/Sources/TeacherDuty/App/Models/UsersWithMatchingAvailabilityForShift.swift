@@ -1,4 +1,3 @@
-
 import Vapor
 import Fluent
 import FluentMySQLDriver
@@ -142,6 +141,6 @@ final class UsersWithMatchingAvailabilityForShift: Model, Content {
     var userEmailAddress: String
     
     @OptionalField(key: "userSupplementaryJSON")
-    var userSupplementaryJSON: OptionalSupplementaryJSON
+    var userSupplementaryJSON: User.Availability?
     
 }

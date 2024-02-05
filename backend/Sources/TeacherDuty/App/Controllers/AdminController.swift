@@ -173,7 +173,7 @@ struct AdminController: RouteCollection {
         }
 
 
-        //TODO: Endpoint that returns all shifts within the ShiftAvailabilitystatus view given a specific date range
+        //Endpoint that returns all shifts within the ShiftAvailabilitystatus view given a specific date range
         struct AdminShiftAvailabilityStatusDataRes : Content {
             var shiftExternalIDText : String
             var startTime : String
@@ -207,8 +207,7 @@ struct AdminController: RouteCollection {
             for shiftAvailabilityStatus in shiftAvailabilityStatuses {
                 let position = try shiftAvailabilityStatus.joined(Position.self)
                 let dayModel = try shiftAvailabilityStatus.joined(Day.self)
-                
-             
+                             
                 guard let shiftDutyLoc = try await Position.query(on: req.db)
                         .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
                         .join(Location.self, on: \Position.$location.$id == \Location.$id)
@@ -256,7 +255,7 @@ struct AdminController: RouteCollection {
             return dutiesDataRes
         }
         
-        //TODO: Endpoint that returns all the users that are assigned a specific shift
+        //Endpoint that returns all the users that are assigned a specific shift
 
         struct AdminShiftUsersDataRes : Content {
             var externalIDText : String
@@ -309,7 +308,7 @@ struct AdminController: RouteCollection {
 
         
         
-        //TODO: Endpoint that returns all the users that have matching availability for a specific shift using UsersWithMatchingAvailabilityForShift view
+        //Endpoint that returns all the users that have matching availability for a specific shift using UsersWithMatchingAvailabilityForShift view
 
          struct AdminUsersWithMatchingAvailabilityForShiftDataRes : Content {
             var externalIDText : String
@@ -360,8 +359,40 @@ struct AdminController: RouteCollection {
             return dutiesDataRes
         }
         
-        //TODO: Endpoint that adds a shift to a user
+        //Endpoint that adds a shift to a user
+        struct AdminAddShiftReq : Content {
+            var shiftExternalIDText : String
+            var userExternalIDText : String
+        }
+        
+        adminProtected.post("adminPanel", "addShift"){ req async throws -> Bool in
+            let addShiftReq = try req.content.decode(AdminAddShiftReq.self)
+                        
 
+            guard let userWithMatchingID = try await User.query(on: req.db)
+              .filter(User.self, \.$externalIDText == addShiftReq.userExternalIDText)
+              .first()
+            else {
+                return false
+            }
+
+            guard let shiftWithMatchingID = try await Shift.query(on: req.db)
+              .filter(Shift.self, \.$externalIDText == addShiftReq.shiftExternalIDText)
+              .first()
+            else {
+                return false
+            }
+            
+            let userShift = UserShifts()
+            userShift.user = userWithMatchingID
+            userShift.shift = shiftWithMatchingID
+
+            try await userShift.create(on: req.db)
+            
+            
+            return true
+            
+        }
         
         
                 
