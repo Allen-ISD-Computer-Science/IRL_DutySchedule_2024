@@ -8,6 +8,8 @@ Allow Allen ISD teachers and administrators to manage conference periods. Our go
 
 - Sai - Project manager, [@saip9](https://github.com/saip9), [Digital Portfolio](https://www.codermerlin.academy/users/sri-nagasai-siva-paladugu/Digital%20Portfolio/index.html)
 
+- Srisaivikas - QA Engineer, [@SrisaivikasMunagala](https://github.com/SrisaivikasMunagala), [Digital Portfolio](https://www.codermerlin.academy/users/srisaivikas-munagala/Digital%20Portfolio/index.html)
+
 - Pranav - Front End Developer, [@pkrish5](https://github.com/pkrish5), [Digital Portfolio](https://codermerlin.academy/users/pranav-krishnan/Digital%20Portfolio/index.html)
 
 - Jakob - Security
