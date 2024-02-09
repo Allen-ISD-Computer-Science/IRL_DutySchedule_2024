@@ -6,24 +6,55 @@ import Container from "react-bootstrap/Container";
 function ShiftAssignerMenu(props) {
     const [didRequestURL, setDidRequestURL] = useState("");
 
-    const [shiftInfo, setShiftInfo] = useState({});
+    const [assignedUsers, setAssignedUsers] = useState([]);
+    const [availableUsers, setAvailableUsers] = useState([]);
+    const [filter, setFilter] = useState("");
 
+    const updateFilter = () => {
+	const available = document.querySelectorAll(".teacherAvailable");
+	available.forEach((ele, i) => {
+	    if (!ele.firstChild.innerText.toLowerCase().includes(filter.toLowerCase())) {
+		ele.classList.add("d-none");
+	    } else {
+		ele.classList.remove("d-none");
+	    }
+	});
+    }
+    
     React.useEffect(() => {
         const getData = (info) => {
-            const requestURL = `${process.env.PUBLIC_URL}/adminPanel/duties/${props.shiftId}`;
+            const requestURL = `${process.env.PUBLIC_URL}/adminPanel/shiftUsers/${props.shiftId}`;
             if (didRequestURL === requestURL) return;
             setDidRequestURL(requestURL);
     
-            fetch(`${process.env.PUBLIC_URL}/adminPanel/duties/${props.shiftId}`, {
+            fetch(`${process.env.PUBLIC_URL}/adminPanel/shiftUsers/data`, {
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
                 method: "POST",
+		body: JSON.stringify({
+		    shiftExternalIDText: props.shiftId
+		})
             })
                 .then((response) => response.json())
                 .then((json) => {
-                    setShiftInfo(json);
+                    setAssignedUsers(json);
+                });
+
+	    fetch(`${process.env.PUBLIC_URL}/adminPanel/usersWithMatchingAvailabilityForShift/data`, {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+		body: JSON.stringify({
+		    shiftExternalIDText: props.shiftId
+		})
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    setAvailableUsers(json);
                 });
         };
 
@@ -37,9 +68,9 @@ function ShiftAssignerMenu(props) {
                     <h2>Teachers On Duty</h2>
                     <hr />
                     {
-                        shiftInfo?.onDuty?.map((teacher, i) => {
+                        assignedUsers.map((teacher, i) => {
                             return (
-                                <Container key={i} className="teacher" id={`teacher-${i}`} data-event={`{ "title": "${teacher.dutyName} - ${teacher.locationName}", "duration": '${shiftInfo.duration}" }`}>
+                                <Container key={i} className="teacher" id={`teacher-${i}`}>
                                     <h3>{teacher.name}</h3>
                                 </Container>
                             );
@@ -55,9 +86,9 @@ function ShiftAssignerMenu(props) {
                     <h2>Teachers Available</h2>
                     <hr />
                     {
-                        shiftInfo?.available?.map((teacher, i) => {
+                        availableUsers.map((teacher, i) => {
                             return (
-                                <Container key={i} className="teacher" id={`teacher-${i}`} data-event={`{ "title": "${teacher.dutyName} - ${teacher.locationName}", "duration": '${shiftInfo.duration}" }`}>
+                                <Container key={i} className="teacher teacherAvailable" id={`teacher-${i}`}>
                                     <h3>{teacher.name}</h3>
                                 </Container>
                             );
@@ -67,8 +98,15 @@ function ShiftAssignerMenu(props) {
                 <Container className="col">
                     {/* Search Bar */}
                     <Container className="w-100 p-2">
-                        <input type="text" className="w-90" placeholder="Search..." />
-                        <Button variant="primary" className="w-10">🔍</Button>
+                        <input type="text" className="w-90"
+			       value={filter}
+			       onChange={(e) =>
+                                   setFilter(
+                                       e.currentTarget.value
+                                   )
+                               }
+			       placeholder="Search..." />
+                        <Button variant="primary" className="ml-4 w-10" onClick={updateFilter}>🔍</Button>
                     </Container>
                 </Container>
             </Container>

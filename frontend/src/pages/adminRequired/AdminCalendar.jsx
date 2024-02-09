@@ -36,7 +36,7 @@ function AdminCalendar() {
             );
         }
 
-        setDutyId(event.id);
+        setDutyId(event.shiftExternalIDText);
         setShowAssignerMenu(true);
     };
 
@@ -50,8 +50,9 @@ function AdminCalendar() {
                 <div className="w-100 px-4 py-5 px-md-5 text-center text-lg-start">
                     <Container>
                         <Calendar
+			    isAdmin={true}
                             timeGrid={true}
-                            duration={1}
+                            duration={7}
                             eventsRef={eventsRef}
                             eventClick={eventClick}
                         />
@@ -76,7 +77,7 @@ function AdminCalendar() {
                 </Modal.Header>
                 <Modal.Body className="text-center">
                     <ShiftAssignerMenu
-                        dutyId={dutyId}
+                        shiftId={dutyId}
                     />
                 </Modal.Body>
                 <Modal.Footer>

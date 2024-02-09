@@ -18,14 +18,16 @@
 -- ================================================================================================
 CREATE VIEW ShiftAvailabilityStatus
 AS 
-SELECT s.id AS shiftID,
+SELECT
+    ROW_NUMBER() OVER (ORDER BY s.id) AS id,
+    s.id AS shiftID,
        s.externalID AS shiftExternalID,
        s.externalIDText AS shiftExternalIDText,
        s.dayID AS shiftDayID,
        s.positionID AS shiftPositionID,
        s.startTime AS shiftStartTime,
        s.endTime AS shiftEndTime,
-       s.supplementaryJSON AS shiftSupplemnetaryJSON,
+       s.supplementaryJSON AS shiftSupplementaryJSON,
 
        us.id AS userShiftID,
        us.externalID AS userShiftExternalID,

@@ -3,10 +3,10 @@ import Fluent
 import FluentMySQLDriver
 
 final class UsersWithMatchingAvailabilityForShift: Model, Content {
-    static let schema = "UsersWithMatchingAvailabilityForShift"
+    static let schema = "UsersWithMatchingAvailabilityForShift_WithID"
 
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: "id", generatedBy: .database)
+    var id: Int?
     
     @Field(key: "shiftID")
     var shiftID: Int
@@ -123,10 +123,10 @@ final class UsersWithMatchingAvailabilityForShift: Model, Content {
     var availabilityEndTime: String
     
     @Field(key: "userID")
-    var userID: Int
+    var userID: Int?
     
     @Field(key: "userExternalID")
-    var userExternalID: UUID
+    var userExternalID: UUID?
     
     @OptionalField(key: "userExternalIDText")
     var userExternalIDText: String?
@@ -141,6 +141,6 @@ final class UsersWithMatchingAvailabilityForShift: Model, Content {
     var userEmailAddress: String
     
     @OptionalField(key: "userSupplementaryJSON")
-    var userSupplementaryJSON: OptionalSupplementaryJSON
+    var userSupplementaryJSON: User.Availability?
     
 }

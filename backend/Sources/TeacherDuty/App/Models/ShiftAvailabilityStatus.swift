@@ -3,16 +3,16 @@ import Fluent
 import FluentMySQLDriver
 
 final class ShiftAvailabilityStatus: Model, Content {
-    static let schema = "ShiftAvailabilityStatus"
+    static let schema = "ShiftAvailabilityStatus_WithID"
 
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: "id", generatedBy: .database)
+    var id: Int?
     
-    @Field(key: "shiftID")
-    var shiftID: Int
-
     @Field(key: "shiftExternalID")
     var shiftExternalID: UUID?
+
+    @Field(key: "shiftID")
+    var shiftID: Int
 
     @Field(key: "shiftExternalIDText")
     var shiftExternalIDText: String
@@ -33,16 +33,16 @@ final class ShiftAvailabilityStatus: Model, Content {
     var shiftSupplementaryJSON: OptionalSupplementaryJSON
 
     @Field(key: "userShiftID")
-    var userShiftID: Int
+    var userShiftID: Int?
 
-    @Field(key: "userExternalID")
+    @Field(key: "userShiftExternalID")
     var userExternalID: UUID?
 
-    @Field(key: "userExternalIDText")
-    var userExternalIDText: String
+    @Field(key: "userShiftExternalIDText")
+    var userExternalIDText: String?
 
     @Field(key: "userShiftUserID")
-    var userShiftUserID: Int
+    var userShiftUserID: Int?
 
     @OptionalField(key: "userShiftSupplementaryJSON")
     var userShiftSupplementaryJSON: OptionalSupplementaryJSON

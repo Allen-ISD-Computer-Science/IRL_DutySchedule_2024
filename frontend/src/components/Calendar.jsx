@@ -38,7 +38,7 @@ function Calendar(props) {
             setTime(day, e.endTime);
             event.end = day;
 
-            console.log(event);
+            // console.log(event);
             api.addEvent(event);
         });
         props.eventsRef.current = eventsData;
@@ -150,7 +150,7 @@ function Calendar(props) {
         }
         try {
             // make http request to get data
-            fetch(process.env.PUBLIC_URL + "/duties/user/date", {
+            fetch(process.env.PUBLIC_URL + (props.isAdmin ? "/adminPanel/shiftAvailabilityStatus/data" : "/duties/user/date"), {
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
@@ -164,6 +164,7 @@ function Calendar(props) {
                 .then((response) => response.json())
                 .then((json) => {
                     updateEvents(json);
+		    console.log(json);
                 });
         } catch (err) {
             console.error(err);
