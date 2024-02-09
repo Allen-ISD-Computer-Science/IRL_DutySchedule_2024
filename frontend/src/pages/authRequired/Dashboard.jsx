@@ -125,24 +125,25 @@ function DashboardPage(props) {
 function updateDutyInformation(data) {
         // Update HTML content with duty information
 
-    document.getElementById("nextDutyName").innerHTML = data.nextDutyName || "Bus Duty";
-    document.getElementById("nextDutyDate").innerHTML = data.nextDutyDate || "01/02/2025";
-    document.getElementById("nextDutyStartTime").innerHTML = data.nextDutyStartTime || "4:00 PM";
-    document.getElementById("nextDutyEndTime").innerHTML = data.nextDutyEndTime || "5:00 PM";
-    document.getElementById("nextDutyLocation").innerHTML = data.nextDutyLocation || "PAC";
+        setNextDutyName(data.nextDutyName || "Bus Duty");
+    setNextDutyDate(data.nextDutyDate || "01/02/2025");
+    setNextDutyStartTime(data.nextDutyStartTime || "4:00 PM");
+    setNextDutyEndTime(data.nextDutyEndTime || "5:00 PM");
+    setNextDutyLocation(data.nextDutyLocation || "PAC");;
 }
 			 <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
-            <h4>Your Next duty:</h4>
-            <br></br>
-            <Container>
-                <h3><b id="nextDutyName">Bus Duty</b></h3>
-                <br></br>
-                <p><FontAwesomeIcon icon={faCalendar} /> <span id="nextDutyDate">01/02/2025</span></p>
-                <p><FontAwesomeIcon icon={faHourglassStart} /> <span id="nextDutyStartTime">4:00 PM</span></p>
-                <p><FontAwesomeIcon icon={faHourglassEnd} /> <span id="nextDutyEndTime">5:00 PM</span></p>
-                <p><FontAwesomeIcon icon={faMapPin} /> <span id="nextDutyLocation">PAC</span></p>
-            </Container>
-        </Container>
+    <h4>Your Next duty:</h4>
+    <br></br>
+    <Container>
+        <h3><b id="nextDutyName">{nextDutyName}</b></h3>
+        <br></br>
+        <p><FontAwesomeIcon icon={faCalendar} /> <span id="nextDutyDate">{nextDutyDate}</span></p>
+        <p><FontAwesomeIcon icon={faHourglassStart} /> <span id="nextDutyStartTime">{nextDutyStartTime}</span></p>
+        <p><FontAwesomeIcon icon={faHourglassEnd} /> <span id="nextDutyEndTime">{nextDutyEndTime}</span></p>
+        <p><FontAwesomeIcon icon={faMapPin} /> <span id="nextDutyLocation">{nextDutyLocation}</span></p>
+    </Container>
+</Container>
+
     );
 }
 
