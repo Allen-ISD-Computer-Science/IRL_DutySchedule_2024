@@ -114,7 +114,7 @@ final class UsersWithMatchingAvailabilityForShift: Model, Content {
     var availabilityExternalIDText: String?
     
     @OptionalField(key: "availabilitySupplementaryJSON")
-    var availabilitySupplementaryJSON: OptionalSupplementaryJSON
+    var availabilitySupplementaryJSON: User.Availability?
     
     @Field(key: "availabilityStartTime")
     var availabilityStartTime: String

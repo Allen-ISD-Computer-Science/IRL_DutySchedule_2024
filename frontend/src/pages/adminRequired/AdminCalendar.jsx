@@ -52,7 +52,7 @@ function AdminCalendar() {
                         <Calendar
 			    isAdmin={true}
                             timeGrid={true}
-                            duration={7}
+                            duration={2}
                             eventsRef={eventsRef}
                             eventClick={eventClick}
                         />

@@ -61,6 +61,34 @@ function ShiftAssignerMenu(props) {
         getData();
     }, [didRequestURL, props.shiftId]);
     
+    const assignTeacher = async (e) => {
+	console.log(e);
+
+	const externalUserID = e.currentTarget.id.split("_")[1];
+	
+	fetch(`${process.env.PUBLIC_URL}/adminPanel/addShift`, {
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+	    body: JSON.stringify({
+		shiftExternalIDText: props.shiftId,
+		userExternalIDText: externalUserID
+	    })
+        })
+            .then((response) => response.json())
+            .then((json) => {
+		console.log(json);
+
+		setAssignedUsers([
+		    ...assignedUsers,
+		    availableUsers.find(a => a.externalIDText == externalUserID)
+		])
+                setAvailableUsers(availableUsers.filter(a => a.externalIDText != externalUserID));
+            });	
+    }
+    
     return (
         <Container className="d-flex justify-content-between align-items-stretch p-2">
             <Container className="row" style={{ overflow: "hidden", maxHeight: "89.5vh" }}>
@@ -70,8 +98,8 @@ function ShiftAssignerMenu(props) {
                     {
                         assignedUsers.map((teacher, i) => {
                             return (
-                                <Container key={i} className="teacher" id={`teacher-${i}`}>
-                                    <h3>{teacher.name}</h3>
+                                <Container key={i} className="teacher" id={`teacher_${teacher.externalIDText}`}>
+                                    <h3>{teacher.firstName} {teacher.lastName}</h3>
                                 </Container>
                             );
                         })
@@ -82,15 +110,15 @@ function ShiftAssignerMenu(props) {
                 </Container>
             </Container>
             <Container className="row" style={{ overflow: "hidden", maxHeight: "89.5vh" }}>
-                <Container className="col">
+                <Container className="col" style={{ maxHeight: "70%", overflowY: "auto" }}>
                     <h2>Teachers Available</h2>
                     <hr />
                     {
                         availableUsers.map((teacher, i) => {
                             return (
-                                <Container key={i} className="teacher teacherAvailable" id={`teacher-${i}`}>
-                                    <h3>{teacher.name}</h3>
-                                </Container>
+                                <Button key={i} className="teacher teacherAvailable" onClick={(e) => { assignTeacher(e) }} id={`teacher_${teacher.externalIDText}`}>
+                                    {teacher.firstName} {teacher.lastName}
+                                </Button>
                             );
                         })
                     }

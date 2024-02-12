@@ -366,8 +366,7 @@ struct AdminController: RouteCollection {
         }
         
         adminProtected.post("adminPanel", "addShift"){ req async throws -> Bool in
-            let addShiftReq = try req.content.decode(AdminAddShiftReq.self)
-                        
+            let addShiftReq = try req.content.decode(AdminAddShiftReq.self);
 
             guard let userWithMatchingID = try await User.query(on: req.db)
               .filter(User.self, \.$externalIDText == addShiftReq.userExternalIDText)
@@ -384,8 +383,8 @@ struct AdminController: RouteCollection {
             }
             
             let userShift = UserShifts()
-            userShift.user = userWithMatchingID
-            userShift.shift = shiftWithMatchingID
+            userShift.$user.id = userWithMatchingID.id!
+            userShift.$shift.id = shiftWithMatchingID.id!
 
             try await userShift.create(on: req.db)
             
