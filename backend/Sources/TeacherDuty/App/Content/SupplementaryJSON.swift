@@ -1,13 +1,79 @@
 import Vapor
+import Foundation
+import Fluent
 
 public typealias Key = String
-public typealias SupplementaryJSON = [Key: String]
+public typealias SupplementaryJSON = [Key: SupplementaryAny]
 public typealias OptionalSupplementaryJSON = SupplementaryJSON?
+
+public enum SupplementaryAny: Codable {
+    case string(String), array([SupplementaryAny]), dictionary(SupplementaryJSON)
+
+    // Custom decoder to decode types into enums.
+    public init(from decoder: Decoder) throws { // TODO fix this... must be a simpler way.
+        if let container = try? decoder.singleValueContainer() {
+            if let value = try? container.decode(String.self) {
+                self = .string(value)
+                return
+            }
+
+            if let value = try? container.decode(SupplementaryJSON.self) {
+                self = .dictionary(value)
+                return
+            }
+        }
+
+        if var container = try? decoder.unkeyedContainer() {
+            var input = [SupplementaryAny]()
+
+            while !container.isAtEnd {
+                input.append(try container.decode(SupplementaryAny.self))
+            }
+            self = .array(input)
+            return
+        }
+
+        throw SupplementaryAnyError.noDecoderTypeFound
+    }
+
+    // Customer encoder to inline.
+    public func encode(to encoder: Encoder) throws {  // TODO fix this... must be a simpler way. maybe use switch.
+        if case .array(let value) = self {
+            var unkeyedContainer = encoder.unkeyedContainer()
+
+            try unkeyedContainer.encode(value)
+            return
+        }
+
+
+        var singleValueContainer = encoder.singleValueContainer()
+
+        if case .string(let string) = self {
+            try singleValueContainer.encode(string)
+            return
+        }
+
+        if case .dictionary(let dictionary) = self {
+            try singleValueContainer.encode(dictionary)
+            return
+        }
+
+        throw SupplementaryAnyError.noEncoderTypeFound
+    }
+
+
+    enum SupplementaryAnyError: Error {
+        case noDecoderTypeFound
+        case noEncoderTypeFound
+    }
+}
+
 
 extension SupplementaryJSON {
     enum SupplementaryJSONError: Error {
         case keyNotFound(_ key: String)
-        case keyCannotCast(to: LosslessStringConvertible.Type)
+        case notString(_ key: String)
+        case valueCannotCast(from: String, to: LosslessStringConvertible.Type)
     }
 
     func has(_ key: Key) -> Bool {
@@ -27,8 +93,12 @@ extension SupplementaryJSON {
             throw SupplementaryJSONError.keyNotFound(key)
         }
 
-        guard let typedValue = type.init(value) else {
-            throw SupplementaryJSONError.keyCannotCast(to: type)
+        guard case .string(let stringValue) = value else {
+            throw SupplementaryJSONError.notString(key)
+        }
+
+        guard let typedValue = type.init(stringValue) else {
+            throw SupplementaryJSONError.valueCannotCast(from: stringValue, to: type)
         }
 
         return typedValue
