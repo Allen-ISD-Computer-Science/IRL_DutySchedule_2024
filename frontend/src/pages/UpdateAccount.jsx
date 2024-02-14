@@ -32,10 +32,10 @@ function UpdateAccount() {
         }
         else if (data.error){
             if (data.error === "Account successfully created."){
-                window.location.href = {process.env.PUBLIC_URL + "../signin"};
+                window.location.href = process.env.PUBLIC_URL + "../signin";
             }
             else if (data.error === "Account already verified."){
-                window.location.href = {process.env.PUBLIC_URL + "../signin"};
+                window.location.href = process.env.PUBLIC_URL + "../signin";
             }
             else {
                 alert(data.error)
