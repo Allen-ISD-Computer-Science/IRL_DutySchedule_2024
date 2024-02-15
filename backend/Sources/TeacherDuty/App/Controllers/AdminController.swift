@@ -271,9 +271,9 @@ struct AdminController: RouteCollection {
             var dutiesDataRes = [AdminShiftUsersDataRes]()
 
             let userShifts = try await UserShifts.query(on: req.db)
-              .join(User.self, on: \UserShifts.$user.$id == \User.$id)
               .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
-              .filter(Shift.self, \.$externalIDText == dutiesDataReq.shiftExternalIDText)
+              .filter(Shift.self, \Shift.$externalIDText == dutiesDataReq.shiftExternalIDText)
+              .join(User.self, on: \UserShifts.$user.$id == \User.$id)
               .all()
             
             for userShift in userShifts {
