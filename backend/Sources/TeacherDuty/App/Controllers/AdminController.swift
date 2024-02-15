@@ -174,7 +174,7 @@ struct AdminController: RouteCollection {
 
 
         //Endpoint that returns all shifts within the ShiftAvailabilitystatus view given a specific date range
-        struct AdminShiftAvailabilityStatusDataRes : Content {
+        struct AdminShiftAvailabilityStatusDataRes : Content, Hashable {
             var shiftExternalIDText : String
             var startTime : String
             var endTime : String
@@ -186,6 +186,14 @@ struct AdminController: RouteCollection {
             var locationName : String
             var locationDescription : String
             var fullfilledStatus: String
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(shiftExternalIDText)
+            }
+
+            static func ==(lhs: AdminShiftAvailabilityStatusDataRes, rhs: AdminShiftAvailabilityStatusDataRes) -> Bool {
+                return lhs.shiftExternalIDText == rhs.shiftExternalIDText
+            }
         }
         
         struct AdminShiftAvailabilityStatusDataReq : Content {
@@ -195,7 +203,6 @@ struct AdminController: RouteCollection {
         
         adminProtected.post("adminPanel", "shiftAvailabilityStatus", "data"){ req async throws -> [AdminShiftAvailabilityStatusDataRes] in
             let dutiesDataReq = try req.content.decode(AdminShiftAvailabilityStatusDataReq.self)
-            var dutiesDataRes = [AdminShiftAvailabilityStatusDataRes]()
 
             let shiftAvailabilityStatuses = try await ShiftAvailabilityStatus.query(on: req.db)
               .join(Day.self, on: \ShiftAvailabilityStatus.$shiftDayID.$id == \Day.$id)
@@ -205,6 +212,9 @@ struct AdminController: RouteCollection {
               .join(Location.self, on: \Position.$location.$id == \Location.$id)
               .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
               .all()
+
+            // Use a set to only have one shift instance.
+            var dutiesDataRes = Set<AdminShiftAvailabilityStatusDataRes>()
 
             for shiftAvailabilityStatus in shiftAvailabilityStatuses {
                 let dayModel = try shiftAvailabilityStatus.joined(Day.self)
@@ -228,20 +238,19 @@ struct AdminController: RouteCollection {
                   startTime: startTime,
                   endTime: endTime,
                   day: day,
-                  dayOfWeek: dayOfWeek,
-                  dayType: dayType,
+                  dayOfWeek: dayOfWeek, // Unused calls /calender/data
+                  dayType: dayType, // Unused
                   dutyName: dutyName,
-                  dutyDescription: dutyDescription,
+                  dutyDescription: dutyDescription, // Unused
                   locationName: locationName,
-                  locationDescription: locationDescription,
+                  locationDescription: locationDescription, // Unused
                   fullfilledStatus: fullfilledStatus
                 )
 
-                dutiesDataRes.append(dutiesData)
-
-                
+                dutiesDataRes.insert(dutiesData)
             }
-            return dutiesDataRes
+
+            return Array(dutiesDataRes) // Sets do not conform to response struct.
         }
         
         //Endpoint that returns all the users that are assigned a specific shift
