@@ -38,7 +38,7 @@ func routes(_ app: Application) throws {
     
     // Create protected route group which requires user auth.
     let sessions = app.grouped([User.sessionAuthenticator(), User.credentialsAuthenticator()])
-    let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
+    let protected = sessions.grouped(User.redirectMiddleware(path: GlobalConfiguration.cached.vaporServerPublicURL.absoluteString + "/signin"))
 
     protected.get("index") { req in
         return try await renderIndex(req)

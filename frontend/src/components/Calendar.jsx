@@ -24,6 +24,7 @@ function Calendar(props) {
         eventsData.forEach((e) => {
             const event = {};
             event.title = e.dutyName;
+	    event.id = e.shiftExternalIDText;
 
             var dayNums = e.day
                 .split("T")[0]

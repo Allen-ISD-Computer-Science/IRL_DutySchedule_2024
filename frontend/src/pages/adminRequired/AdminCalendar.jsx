@@ -14,21 +14,9 @@ function AdminCalendar() {
     const eventClick = (info) => {
         if (["A Day", "B Day"].includes(info.event.title)) return;
 
-        const event = eventsRef.current.find((a) => {
-            var dayNums = a.day
-                .split("T")[0]
-                .split("-")
-                .map((b) => parseInt(b));
-            dayNums[1] = dayNums[1] - 1;
+	console.log(info.event.id);
 
-            const day = new Date(...dayNums);
-            day.setHours(...a.startTime.split(":").map((a) => parseInt(a)));
-            console.log(day.toString(), day.getTime());
-            return (
-                a.dutyName === info.event.title &&
-                day.getTime() === info.event.start.getTime()
-            );
-        });
+        const event = eventsRef.current.find((a) => a.shiftExternalIDText === info.event.id);
 
         if (!event) {
             throw new Error(
