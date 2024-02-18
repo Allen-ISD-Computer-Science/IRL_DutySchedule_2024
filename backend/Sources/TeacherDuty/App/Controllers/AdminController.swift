@@ -364,34 +364,116 @@ struct AdminController: RouteCollection {
         enum AdminAddShiftError : Error {
             case noUserFound(userExternalIDText: String)
             case noShiftFound(shiftExternalIDText: String)
+            case shiftAlreadyAssigned
         }
         
-        adminProtected.post("adminPanel", "addShift") { req async throws in
+        adminProtected.post("adminPanel", "addShift") { req async throws -> Bool in
             let addShiftReq = try req.content.decode(AdminAddShiftReq.self)
 
             guard let userWithMatchingID = try await User.query(on: req.db)
                     .filter(User.self, \.$externalIDText == addShiftReq.userExternalIDText)
-                    .first()
+                    .field(\.$id)
+                    .first()?.id
             else {
                 throw AdminAddShiftError.noUserFound(userExternalIDText: addShiftReq.userExternalIDText)
             }
 
             guard let shiftWithMatchingID = try await Shift.query(on: req.db)
                     .filter(Shift.self, \.$externalIDText == addShiftReq.shiftExternalIDText)
-                    .first()
+                    .field(\.$id)
+                    .first()?.id
             else {
                 throw AdminAddShiftError.noShiftFound(shiftExternalIDText: addShiftReq.shiftExternalIDText)
             }
-            
+
+            guard try await UserShifts.query(on: req.db)
+                    .filter(\.$user.$id == userWithMatchingID)
+                    .filter(\.$shift.$id == shiftWithMatchingID)
+                    .count() == 0
+            else {
+                throw AdminAddShiftError.shiftAlreadyAssigned
+            }
+
             let userShift = UserShifts()
-            userShift.$user.id = userWithMatchingID.id!
-            userShift.$shift.id = shiftWithMatchingID.id!
+            userShift.$user.id = userWithMatchingID
+            userShift.$shift.id = shiftWithMatchingID
 
             try await userShift.create(on: req.db)
 
             return true
         }
-        
+
+        // Two options
+        struct AdminRemoveShiftReq : Content {
+            // Option 1
+            var userShiftExternalIDText: String?
+
+            // Option 2
+            var shiftExternalIDText : String?
+            var userExternalIDText : String?
+        }
+
+        enum AdminRemoveShiftError : Error {
+            case noUserShiftFound(userShiftExternalIDText: String)
+            case noUserShiftFound(shiftExternalIDText: String, userExternalIDText: String)
+            case noUserFound(userExternalIDText: String)
+            case noShiftFound(shiftExternalIDText: String)
+            case missingBody
+        }
+
+        // Remove shift supports two ways of sending the request.
+        adminProtected.post("adminPanel", "removeShift") { req async throws -> Bool in
+            let removeShiftReq = try req.content.decode(AdminRemoveShiftReq.self)
+
+            // Option 1 logic.
+            if let userShiftExternalID = removeShiftReq.userShiftExternalIDText {
+                guard let userShift = try await UserShifts.query(on: req.db)
+                        .filter(\UserShifts.$externalIDText == userShiftExternalID)
+                        .first()
+                else {
+                    throw AdminRemoveShiftError.noUserShiftFound(userShiftExternalIDText: userShiftExternalID)
+                }
+
+                try await userShift.delete(on: req.db)
+
+                return true
+            }
+
+
+            // Option 2 logic.
+            if let shiftExternalID = removeShiftReq.shiftExternalIDText, let userExternalID = removeShiftReq.userExternalIDText {
+                guard let userWithMatchingID = try await User.query(on: req.db)
+                        .filter(User.self, \.$externalIDText == userExternalID)
+                        .field(\.$id)
+                        .first()?.id
+                else {
+                    throw AdminRemoveShiftError.noUserFound(userExternalIDText: userExternalID)
+                }
+
+                guard let shiftWithMatchingID = try await Shift.query(on: req.db)
+                        .filter(Shift.self, \.$externalIDText == shiftExternalID)
+                        .field(\.$id)
+                        .first()?.id
+                else {
+                    throw AdminRemoveShiftError.noShiftFound(shiftExternalIDText: shiftExternalID)
+                }
+
+                guard let userShift = try await UserShifts.query(on: req.db)
+                        .filter(\.$user.$id == userWithMatchingID)
+                        .filter(\.$shift.$id == shiftWithMatchingID)
+                        .first()
+                else {
+                    throw AdminRemoveShiftError.noUserShiftFound(shiftExternalIDText: shiftExternalID, userExternalIDText: userExternalID)
+                }
+
+                try await userShift.delete(on: req.db)
+
+                return true
+            }
+
+            throw AdminRemoveShiftError.missingBody
+        }
+
         
 
         struct CustomError: Content {
