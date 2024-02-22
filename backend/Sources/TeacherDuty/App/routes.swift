@@ -272,7 +272,68 @@ func routes(_ app: Application) throws {
         
         return dutiesDataRes
     }
-   
+
+
+    /// Endpoint that returns the availability of a user
+    struct UserAvailabilityDataRes : Content {
+        var startTime : String
+        var endTime : String
+        var day : Date
+        var dayofWeek : Int?
+        var dayType : OptionalSupplementaryJSON
+    }
+    
+    protected.get("user", "availability", ":id") {req async throws -> [UserAvailabilityDataRes] in
+        var userAvailabilityDataRes = [UserAvailabilityDataRes]()
+
+        guard let userID = req.parameters.get("userID", as: Int.self) else {
+            app.logger.warning("userID does not have a field.")
+            throw Abort(.unauthorized, reason: "userID does not have a field")
+        }
+        guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
+            app.logger.warning("User does not exist")
+            throw Abort(.unauthorized, reason: "User does not exist")
+        }
+
+
+        let usersAvailability = try await UserAvailability.query(on: req.db)
+          .join(User.self, on: \UserAvailability.$user == \User.$id)
+          .join(Availability.self, on: \UserAvailability.$avilability == \Shift.$id)
+          .filter(User.self, \.$id == userID)
+          .all()
+
+        
+        for userAvailability in usersAvailability {
+            let availability = try userAvailability.joined(Availability.self)
+
+            let availabilityDay = try await Availability.query(on: req.db)
+              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+              .filter(Availability.self, \.$id == availability.id!)
+              .first()
+
+            if availabilityDay != nil {
+                let dayModel = try availabilityDay.joined(Day.self)
+
+                let startTime = availability.start
+                let endTime = availability.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+
+                let userAvailabilityData = UserAvailabilityDataRes.init(
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType
+                )
+                
+                userAvailabilityDataRes.append(userAvailabilityData)
+            }
+        }
+        return userAvailabilityDataRes
+    }
+    
     
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)

@@ -272,8 +272,8 @@ struct AdminController: RouteCollection {
 
             let userShifts = try await UserShifts.query(on: req.db)
               .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
-              .filter(Shift.self, \Shift.$externalIDText == dutiesDataReq.shiftExternalIDText)
               .join(User.self, on: \UserShifts.$user.$id == \User.$id)
+              .filter(Shift.self, \Shift.$externalIDText == dutiesDataReq.shiftExternalIDText)
               .all()
             
             for userShift in userShifts {
@@ -354,7 +354,8 @@ struct AdminController: RouteCollection {
             }
             return dutiesDataRes
         }
-        
+
+
         //Endpoint that adds a shift to a user
         struct AdminAddShiftReq : Content {
             var shiftExternalIDText : String
