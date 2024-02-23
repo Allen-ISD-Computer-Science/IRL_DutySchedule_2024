@@ -7,7 +7,7 @@ public typealias SupplementaryJSON = [Key: SupplementaryAny]
 public typealias OptionalSupplementaryJSON = SupplementaryJSON?
 
 public enum SupplementaryAny: Codable {
-    case string(String), array([SupplementaryAny]), dictionary(SupplementaryJSON)
+    case string(String), int(Int), array([SupplementaryAny]), dictionary(SupplementaryJSON)
 
     // Custom decoder to decode types into enums.
     public init(from decoder: Decoder) throws { // TODO fix this... must be a simpler way.
@@ -16,6 +16,12 @@ public enum SupplementaryAny: Codable {
                 self = .string(value)
                 return
             }
+
+            if let value = try? container.decode(Int.self) {
+                self = .int(value)
+                return
+            }
+
 
             if let value = try? container.decode(SupplementaryJSON.self) {
                 self = .dictionary(value)
