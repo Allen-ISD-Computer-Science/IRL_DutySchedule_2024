@@ -279,14 +279,14 @@ func routes(_ app: Application) throws {
         var startTime : String
         var endTime : String
         var day : Date
-        var dayofWeek : Int?
+        var dayOfWeek : Int?
         var dayType : OptionalSupplementaryJSON
     }
     
     protected.get("user", "availability", ":id") {req async throws -> [UserAvailabilityDataRes] in
         var userAvailabilityDataRes = [UserAvailabilityDataRes]()
 
-        guard let userID = req.parameters.get("userID", as: Int.self) else {
+        guard let userID = req.parameters.get("id", as: Int.self) else {
             app.logger.warning("userID does not have a field.")
             throw Abort(.unauthorized, reason: "userID does not have a field")
         }
@@ -295,24 +295,27 @@ func routes(_ app: Application) throws {
             throw Abort(.unauthorized, reason: "User does not exist")
         }
 
-
         let usersAvailability = try await UserAvailability.query(on: req.db)
-          .join(User.self, on: \UserAvailability.$user == \User.$id)
-          .join(Availability.self, on: \UserAvailability.$avilability == \Shift.$id)
+          .join(User.self, on: \UserAvailability.$user.$id == \User.$id)
           .filter(User.self, \.$id == userID)
+          .join(Availability.self, on: \UserAvailability.$availability.$id == \Availability.$id)
           .all()
 
-        
         for userAvailability in usersAvailability {
             let availability = try userAvailability.joined(Availability.self)
+            
+            guard let availabilityID = availability.id else {
+                app.logger.warning("Availability does not have id field.")
+                throw Abort(.unauthorized, reason: "Availability does not have id field")
+            }
 
             let availabilityDay = try await Availability.query(on: req.db)
-              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
-              .filter(Availability.self, \.$id == availability.id!)
+              .join(Day.self, on: \Availability.$day.$id == \Day.$id)
+              .filter(Availability.self, \.$id == availabilityID)
               .first()
 
             if availabilityDay != nil {
-                let dayModel = try availabilityDay.joined(Day.self)
+                let dayModel = try availabilityDay!.joined(Day.self)
 
                 let startTime = availability.start
                 let endTime = availability.end
@@ -325,9 +328,8 @@ func routes(_ app: Application) throws {
                   endTime: endTime,
                   day: day,
                   dayOfWeek: dayOfWeek,
-                  dayType: dayType
-                )
-                
+                  dayType: dayType)
+
                 userAvailabilityDataRes.append(userAvailabilityData)
             }
         }
