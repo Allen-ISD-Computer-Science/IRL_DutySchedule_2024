@@ -38,7 +38,7 @@ func routes(_ app: Application) throws {
     
     // Create protected route group which requires user auth.
     let sessions = app.grouped([User.sessionAuthenticator(), User.credentialsAuthenticator()])
-    let protected = sessions.grouped(User.redirectMiddleware(path: "./signin"))
+    let protected = sessions.grouped(User.redirectMiddleware(path: GlobalConfiguration.cached.vaporServerPublicURL.absoluteString + "/signin"))
 
     protected.get("index") { req in
         return try await renderIndex(req)
@@ -272,7 +272,70 @@ func routes(_ app: Application) throws {
         
         return dutiesDataRes
     }
-   
+
+
+    /// Endpoint that returns the availability of a user
+    struct UserAvailabilityDataRes : Content {
+        var startTime : String
+        var endTime : String
+        var day : Date
+        var dayOfWeek : Int?
+        var dayType : OptionalSupplementaryJSON
+    }
+    
+    protected.get("user", "availability", ":id") {req async throws -> [UserAvailabilityDataRes] in
+        var userAvailabilityDataRes = [UserAvailabilityDataRes]()
+
+        guard let userID = req.parameters.get("id", as: Int.self) else {
+            app.logger.warning("userID does not have a field.")
+            throw Abort(.unauthorized, reason: "userID does not have a field")
+        }
+        guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
+            app.logger.warning("User does not exist")
+            throw Abort(.unauthorized, reason: "User does not exist")
+        }
+
+        let usersAvailability = try await UserAvailability.query(on: req.db)
+          .join(User.self, on: \UserAvailability.$user.$id == \User.$id)
+          .filter(User.self, \.$id == userID)
+          .join(Availability.self, on: \UserAvailability.$availability.$id == \Availability.$id)
+          .all()
+
+        for userAvailability in usersAvailability {
+            let availability = try userAvailability.joined(Availability.self)
+            
+            guard let availabilityID = availability.id else {
+                app.logger.warning("Availability does not have id field.")
+                throw Abort(.unauthorized, reason: "Availability does not have id field")
+            }
+
+            let availabilityDay = try await Availability.query(on: req.db)
+              .join(Day.self, on: \Availability.$day.$id == \Day.$id)
+              .filter(Availability.self, \.$id == availabilityID)
+              .first()
+
+            if availabilityDay != nil {
+                let dayModel = try availabilityDay!.joined(Day.self)
+
+                let startTime = availability.start
+                let endTime = availability.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+
+                let userAvailabilityData = UserAvailabilityDataRes.init(
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType)
+
+                userAvailabilityDataRes.append(userAvailabilityData)
+            }
+        }
+        return userAvailabilityDataRes
+    }
+    
     
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)

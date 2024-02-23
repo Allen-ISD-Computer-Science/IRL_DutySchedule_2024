@@ -7,9 +7,7 @@ function ShiftAssignerMenu(props) {
     const [didRequestURL, setDidRequestURL] = useState("");
 
     const [assignedUsers, setAssignedUsers] = useState([]);
-    const [availableUsers, setAvailableUsers] = useState([
-        { firstName: "Brett", lastName: "Kaplan", externalIDText: "1234" },
-    ]);
+    const [availableUsers, setAvailableUsers] = useState([]);
     const [filter, setFilter] = useState("");
 
     const updateFilter = () => {

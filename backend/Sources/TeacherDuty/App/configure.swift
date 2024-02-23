@@ -23,6 +23,9 @@ func configure(_ app: Application) throws {
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     app.middleware.use(app.sessions.middleware)
 
+    
+    app.logger.logLevel = .debug
+    
     // Configuration
     //app.mailgun.configuration = .init(apiKey: getEnvString("MAILGUN_APIKEY"))
     //app.mailgun.defaultDomain = MailgunDomain(getEnvString("MAILGUN_DOMAIN"), .us)

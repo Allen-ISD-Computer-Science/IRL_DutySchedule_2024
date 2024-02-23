@@ -15,7 +15,7 @@ struct AdminController: RouteCollection {
         adminProtected.post("adminPanel", "upload") { req -> EventLoopFuture<String> in
             let multipart = try req.content.decode(CSVObject.self)
             let csvData = multipart.file
-                
+
             if let csvString = String(data: csvData, encoding: .utf8) {
                 print("CSV Data:\n\(csvString)")
                 return req.eventLoop.future("CSV file found, printed in vapor console")
@@ -51,8 +51,8 @@ struct AdminController: RouteCollection {
             let patch = try req.content.decode(User.Patch.self)
             // Fetch the desired user from the database.
             guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
-            throw Abort(.notFound)
-        }
+                throw Abort(.notFound)
+            }
             // If first name was supplied, update it.
             if let firstName = patch.firstName {
                 user.firstName = firstName
@@ -93,19 +93,19 @@ struct AdminController: RouteCollection {
             var dutiesDataRes = [AdminDutiesDataRes]()
             
             guard let userID = req.parameters.get("userID", as: Int.self) else {
-            app.logger.warning("userID does not have a field.")
-            throw Abort(.unauthorized, reason: "userID does not have a field")
-        }
+                app.logger.warning("userID does not have a field.")
+                throw Abort(.unauthorized, reason: "userID does not have a field")
+            }
             guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
-            app.logger.warning("User does not exist")
-            throw Abort(.unauthorized, reason: "User does not exist")
-        }
+                app.logger.warning("User does not exist")
+                throw Abort(.unauthorized, reason: "User does not exist")
+            }
             
 
             let userShifts = try await UserShifts.query(on: req.db)
               .join(User.self, on: \UserShifts.$user.$id == \User.$id)
-              .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
               .filter(User.self, \.$id == userID)
+              .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
               .limit(dutiesDataReq.count)
               .all()
             
@@ -113,9 +113,9 @@ struct AdminController: RouteCollection {
                 let shift = try userShift.joined(Shift.self)
 
                 guard let shiftId = shift.id else {
-                app.logger.warning("Shift does not have id field.")
-                throw Abort(.unauthorized, reason: "Shift does not have id field")
-            }
+                    app.logger.warning("Shift does not have id field.")
+                    throw Abort(.unauthorized, reason: "Shift does not have id field")
+                }
 
                 let shiftDayPos = try await Shift.query(on: req.db)
                   .join(Day.self, on: \Shift.$day.$id == \Day.$id)
@@ -174,7 +174,7 @@ struct AdminController: RouteCollection {
 
 
         //Endpoint that returns all shifts within the ShiftAvailabilitystatus view given a specific date range
-        struct AdminShiftAvailabilityStatusDataRes : Content {
+        struct AdminShiftAvailabilityStatusDataRes : Content, Hashable {
             var shiftExternalIDText : String
             var startTime : String
             var endTime : String
@@ -186,6 +186,14 @@ struct AdminController: RouteCollection {
             var locationName : String
             var locationDescription : String
             var fullfilledStatus: String
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(shiftExternalIDText)
+            }
+
+            static func ==(lhs: AdminShiftAvailabilityStatusDataRes, rhs: AdminShiftAvailabilityStatusDataRes) -> Bool {
+                return lhs.shiftExternalIDText == rhs.shiftExternalIDText
+            }
         }
         
         struct AdminShiftAvailabilityStatusDataReq : Content {
@@ -195,32 +203,23 @@ struct AdminController: RouteCollection {
         
         adminProtected.post("adminPanel", "shiftAvailabilityStatus", "data"){ req async throws -> [AdminShiftAvailabilityStatusDataRes] in
             let dutiesDataReq = try req.content.decode(AdminShiftAvailabilityStatusDataReq.self)
-            var dutiesDataRes = [AdminShiftAvailabilityStatusDataRes]()
 
             let shiftAvailabilityStatuses = try await ShiftAvailabilityStatus.query(on: req.db)
               .join(Day.self, on: \ShiftAvailabilityStatus.$shiftDayID.$id == \Day.$id)
-              .join(Position.self, on: \ShiftAvailabilityStatus.$shiftPositionID.$id == \Position.$id)
               .filter(Day.self, \.$day >= dutiesDataReq.from)
               .filter(Day.self, \.$day <= dutiesDataReq.through)
+              .join(Position.self, on: \ShiftAvailabilityStatus.$shiftPositionID.$id == \Position.$id)
+              .join(Location.self, on: \Position.$location.$id == \Location.$id)
+              .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
               .all()
-                                    
+
+            // Use a set to only have one shift instance.
+            var dutiesDataRes = Set<AdminShiftAvailabilityStatusDataRes>()
+
             for shiftAvailabilityStatus in shiftAvailabilityStatuses {
-                let position = try shiftAvailabilityStatus.joined(Position.self)
                 let dayModel = try shiftAvailabilityStatus.joined(Day.self)
-                             
-                guard let shiftDutyLoc = try await Position.query(on: req.db)
-                        .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
-                        .join(Location.self, on: \Position.$location.$id == \Location.$id)
-                        .filter(Position.self, \.$id == position.id!)
-                        .first() else {
-                    app.logger.warning("ShiftDutyLoc error.")
-                    throw Abort(.unauthorized, reason: "ShiftDutyLoc error")
-                    
-                }
-                                    
-                
-                let location = try shiftDutyLoc.joined(Location.self)
-                let duty = try shiftDutyLoc.joined(Duty.self)
+                let location = try shiftAvailabilityStatus.joined(Location.self)
+                let duty = try shiftAvailabilityStatus.joined(Duty.self)
                 
                 let startTime = shiftAvailabilityStatus.shiftStartTime
                 let endTime = shiftAvailabilityStatus.shiftEndTime
@@ -239,20 +238,19 @@ struct AdminController: RouteCollection {
                   startTime: startTime,
                   endTime: endTime,
                   day: day,
-                  dayOfWeek: dayOfWeek,
-                  dayType: dayType,
+                  dayOfWeek: dayOfWeek, // Unused calls /calender/data
+                  dayType: dayType, // Unused
                   dutyName: dutyName,
-                  dutyDescription: dutyDescription,
+                  dutyDescription: dutyDescription, // Unused
                   locationName: locationName,
-                  locationDescription: locationDescription,
+                  locationDescription: locationDescription, // Unused
                   fullfilledStatus: fullfilledStatus
                 )
-                    
-                dutiesDataRes.append(dutiesData)
-                    
-                
+
+                dutiesDataRes.insert(dutiesData)
             }
-            return dutiesDataRes
+
+            return Array(dutiesDataRes) // Sets do not conform to response struct.
         }
         
         //Endpoint that returns all the users that are assigned a specific shift
@@ -271,28 +269,26 @@ struct AdminController: RouteCollection {
         adminProtected.post("adminPanel", "shiftUsers", "data"){ req async throws -> [AdminShiftUsersDataRes] in
             let dutiesDataReq = try req.content.decode(AdminShiftUsersDataReq.self)
             var dutiesDataRes = [AdminShiftUsersDataRes]()
-            
 
-                       
             let userShifts = try await UserShifts.query(on: req.db)
-              .join(User.self, on: \UserShifts.$user.$id == \User.$id)
               .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
-              .filter(Shift.self, \.$externalIDText == dutiesDataReq.shiftExternalIDText)
+              .join(User.self, on: \UserShifts.$user.$id == \User.$id)
+              .filter(Shift.self, \Shift.$externalIDText == dutiesDataReq.shiftExternalIDText)
               .all()
             
             for userShift in userShifts {
                 let user = try userShift.joined(User.self)
 
-                guard let userID = user.id else {
-                app.logger.warning("User does not have id field.")
-                throw Abort(.unauthorized, reason: "User does not have id field")
-            }
+                guard let userID = user.id else { // TODO: remove because unused and querry forces it to be in the database, with an id.
+                    app.logger.warning("User does not have id field.")
+                    throw Abort(.unauthorized, reason: "User does not have id field")
+                }
 
                 let externalIDText = user.externalIDText! // todo: guard let
                 let firstName = user.firstName
                 let lastName = user.lastName
                 let email = user.email
-                                
+
                 let dutiesData = AdminShiftUsersDataRes.init(
                   externalIDText: externalIDText,
                   firstName: firstName,
@@ -301,7 +297,7 @@ struct AdminController: RouteCollection {
                 )
                 
                 dutiesDataRes.append(dutiesData)
-                                
+
             }
             return dutiesDataRes
         }
@@ -310,7 +306,7 @@ struct AdminController: RouteCollection {
         
         //Endpoint that returns all the users that have matching availability for a specific shift using UsersWithMatchingAvailabilityForShift view
 
-         struct AdminUsersWithMatchingAvailabilityForShiftDataRes : Content {
+        struct AdminUsersWithMatchingAvailabilityForShiftDataRes : Content {
             var externalIDText : String
             var firstName : String
             var lastName : String
@@ -331,21 +327,21 @@ struct AdminController: RouteCollection {
               .join(Shift.self, on: \UsersWithMatchingAvailabilityForShift.$shiftID == \Shift.$id)
               .filter(Shift.self, \.$externalIDText == dutiesDataReq.shiftExternalIDText)
               .all()
-                        
+
             
             for userMatch in usersWithMatchingAvailabilityForShift {
                 let user = try userMatch.joined(User.self)
 
                 guard let userID = user.id else {
-                app.logger.warning("User does not have id field.")
-                throw Abort(.unauthorized, reason: "User does not have id field")
-            }
+                    app.logger.warning("User does not have id field.")
+                    throw Abort(.unauthorized, reason: "User does not have id field")
+                }
 
                 let externalIDText = user.externalIDText! // todo: guard let
                 let firstName = user.firstName
                 let lastName = user.lastName
                 let email = user.email
-                                
+
                 let dutiesData = AdminUsersWithMatchingAvailabilityForShiftDataRes.init(
                   externalIDText: externalIDText,
                   firstName: firstName,
@@ -354,47 +350,133 @@ struct AdminController: RouteCollection {
                 )
                 
                 dutiesDataRes.append(dutiesData)
-                                
+
             }
             return dutiesDataRes
         }
-        
+
+
         //Endpoint that adds a shift to a user
         struct AdminAddShiftReq : Content {
             var shiftExternalIDText : String
             var userExternalIDText : String
         }
+
+        enum AdminAddShiftError : Error {
+            case noUserFound(userExternalIDText: String)
+            case noShiftFound(shiftExternalIDText: String)
+            case shiftAlreadyAssigned
+        }
         
-        adminProtected.post("adminPanel", "addShift"){ req async throws -> Bool in
-            let addShiftReq = try req.content.decode(AdminAddShiftReq.self);
+        adminProtected.post("adminPanel", "addShift") { req async throws -> Bool in
+            let addShiftReq = try req.content.decode(AdminAddShiftReq.self)
 
             guard let userWithMatchingID = try await User.query(on: req.db)
-              .filter(User.self, \.$externalIDText == addShiftReq.userExternalIDText)
-              .first()
+                    .filter(User.self, \.$externalIDText == addShiftReq.userExternalIDText)
+                    .field(\.$id)
+                    .first()?.id
             else {
-                return false
+                throw AdminAddShiftError.noUserFound(userExternalIDText: addShiftReq.userExternalIDText)
             }
 
             guard let shiftWithMatchingID = try await Shift.query(on: req.db)
-              .filter(Shift.self, \.$externalIDText == addShiftReq.shiftExternalIDText)
-              .first()
+                    .filter(Shift.self, \.$externalIDText == addShiftReq.shiftExternalIDText)
+                    .field(\.$id)
+                    .first()?.id
             else {
-                return false
+                throw AdminAddShiftError.noShiftFound(shiftExternalIDText: addShiftReq.shiftExternalIDText)
             }
-            
+
+            guard try await UserShifts.query(on: req.db)
+                    .filter(\.$user.$id == userWithMatchingID)
+                    .filter(\.$shift.$id == shiftWithMatchingID)
+                    .count() == 0
+            else {
+                throw AdminAddShiftError.shiftAlreadyAssigned
+            }
+
             let userShift = UserShifts()
-            userShift.$user.id = userWithMatchingID.id!
-            userShift.$shift.id = shiftWithMatchingID.id!
+            userShift.$user.id = userWithMatchingID
+            userShift.$shift.id = shiftWithMatchingID
 
             try await userShift.create(on: req.db)
-            
-            
+
             return true
-            
         }
+
+        // Two options
+        struct AdminRemoveShiftReq : Content {
+            // Option 1
+            var userShiftExternalIDText: String?
+
+            // Option 2
+            var shiftExternalIDText : String?
+            var userExternalIDText : String?
+        }
+
+        enum AdminRemoveShiftError : Error {
+            case noUserShiftFound(userShiftExternalIDText: String)
+            case noUserShiftFound(shiftExternalIDText: String, userExternalIDText: String)
+            case noUserFound(userExternalIDText: String)
+            case noShiftFound(shiftExternalIDText: String)
+            case missingBody
+        }
+
+        // Remove shift supports two ways of sending the request.
+        adminProtected.post("adminPanel", "removeShift") { req async throws -> Bool in
+            let removeShiftReq = try req.content.decode(AdminRemoveShiftReq.self)
+
+            // Option 1 logic.
+            if let userShiftExternalID = removeShiftReq.userShiftExternalIDText {
+                guard let userShift = try await UserShifts.query(on: req.db)
+                        .filter(\UserShifts.$externalIDText == userShiftExternalID)
+                        .first()
+                else {
+                    throw AdminRemoveShiftError.noUserShiftFound(userShiftExternalIDText: userShiftExternalID)
+                }
+
+                try await userShift.delete(on: req.db)
+
+                return true
+            }
+
+
+            // Option 2 logic.
+            if let shiftExternalID = removeShiftReq.shiftExternalIDText, let userExternalID = removeShiftReq.userExternalIDText {
+                guard let userWithMatchingID = try await User.query(on: req.db)
+                        .filter(User.self, \.$externalIDText == userExternalID)
+                        .field(\.$id)
+                        .first()?.id
+                else {
+                    throw AdminRemoveShiftError.noUserFound(userExternalIDText: userExternalID)
+                }
+
+                guard let shiftWithMatchingID = try await Shift.query(on: req.db)
+                        .filter(Shift.self, \.$externalIDText == shiftExternalID)
+                        .field(\.$id)
+                        .first()?.id
+                else {
+                    throw AdminRemoveShiftError.noShiftFound(shiftExternalIDText: shiftExternalID)
+                }
+
+                guard let userShift = try await UserShifts.query(on: req.db)
+                        .filter(\.$user.$id == userWithMatchingID)
+                        .filter(\.$shift.$id == shiftWithMatchingID)
+                        .first()
+                else {
+                    throw AdminRemoveShiftError.noUserShiftFound(shiftExternalIDText: shiftExternalID, userExternalIDText: userExternalID)
+                }
+
+                try await userShift.delete(on: req.db)
+
+                return true
+            }
+
+            throw AdminRemoveShiftError.missingBody
+        }
+
         
-        
-                
+
         struct CustomError: Content {
             let error: String
         }
