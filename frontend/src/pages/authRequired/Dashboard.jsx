@@ -94,9 +94,16 @@ function DashboardPage(props) {
     .then((response) => response.json())
     .then((json) => {
             const retrieveNextDutyName = json.dutyName;
+<<<<<<< HEAD
             setNextDutyName(retrieveNextDutyName);
             console.log("Retrieved next duty name:", retrieveNextDutyName);
 
+=======
+            const displayNextDutyName = document.getElementById("displayNextDutyName");
+            const nextDutyName = document.createTextNode(retrieveNextDutyName);
+            displayNextDutyName.appendChild(nextDutyName);
+            
+>>>>>>> 014793631ee55a529d39d83e8825f8c31f4b13f5
              });
         } catch (err) {
             console.error(err);
@@ -128,11 +135,19 @@ function DashboardPage(props) {
 
                         <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
                             <h4> Your Next duty:</h4>
+<<<<<<< HEAD
 
                           <Container>
 
                             <h3 >
                                  <b>{nextDutyName}</b>
+=======
+                            <br></br>
+			    <Container>
+
+                            <h3 >
+                              <b> <span id="displayNextDutyName"></span> </b>
+>>>>>>> 014793631ee55a529d39d83e8825f8c31f4b13f5
                             </h3>
                             <br></br>
                             <p>
