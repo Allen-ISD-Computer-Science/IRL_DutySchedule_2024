@@ -335,7 +335,24 @@ func routes(_ app: Application) throws {
         }
         return userAvailabilityDataRes
     }
+
+    /// Endpoint that returns the availability of a user
+    struct UserAvailabilitySetReq : Content {
+        var startTime : String
+        var endTime : String
+        var day : Date
+        var dayOfWeek : Int?
+        var dayType : OptionalSupplementaryJSON
+    }
     
+    protected.post("user", "availability") {req async throws -> Bool in
+        let user = try req.auth.require(User.self)
+        let userAvailabilityReq = try req.content.decode(UserAvailabilitySetReq.self)
+
+        return true
+
+    }
+
     
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)
