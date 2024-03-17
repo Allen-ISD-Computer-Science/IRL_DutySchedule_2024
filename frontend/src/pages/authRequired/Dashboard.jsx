@@ -27,7 +27,7 @@ function DashboardPage(props) {
     const [eventEndTime, setEventEndTime] = React.useState("");
     const [eventLocation, setEventLocation] = React.useState("");
     const [eventLocationDesc, setEventLocationDesc] = React.useState("");
-    const [nextDutyName, setNextDutyName] = useState('');
+    const [nextDutyName, setNextDutyName] = React.useState("");
     const showEventModal = () => setEventModalVisibility(true);
     const hideEventModal = () => setEventModalVisibility(false);
     
@@ -129,7 +129,6 @@ function DashboardPage(props) {
 
                         <Container className="shadow p-3 mb-5 bg-white rounded mt-4">
                             <h4> Your Next duty:</h4>
-<<<<<<< HEAD
 
                           <Container>
 
@@ -177,7 +176,7 @@ function DashboardPage(props) {
                                 eventClick={eventClick}
                             />
                         </Container>
-                    </Containe
+                  </Container>
                     <EventModal
                         eventNameRef={eventName}
                         eventStartDateRef={eventDate}
