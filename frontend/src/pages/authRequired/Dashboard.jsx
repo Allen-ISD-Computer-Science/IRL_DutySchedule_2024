@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react"
 import { Container } from "react-bootstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -103,6 +103,11 @@ function DashboardPage(props) {
             console.error(err);
         }
     };
+  
+      useEffect(() => {
+        const info = { start: (new Date()) };
+        getData(info);
+      }, []);
 
 
 
