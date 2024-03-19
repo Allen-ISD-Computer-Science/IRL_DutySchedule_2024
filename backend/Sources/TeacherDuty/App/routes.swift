@@ -100,84 +100,54 @@ func routes(_ app: Application) throws {
     protected.post("duties", "user", "date") {req async throws -> [DutiesDataRes] in
         let user = try req.auth.require(User.self)
         let dutiesDataReq = try req.content.decode(DutiesDataReq.self)
-        var dutiesDataRes = [DutiesDataRes]()
-        
+
         guard let userId = user.id else {
-            app.logger.warning("User `\(user.email)` does not have id field.")
             throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
         }
-        
+
         let userShifts = try await UserShifts.query(on: req.db)
-          .join(User.self, on: \UserShifts.$user.$id == \User.$id)
           .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
-          .filter(User.self, \.$id == userId)
+          .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+          .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+          .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+          .join(Location.self, on: \Position.$location.$id == \Location.$id)
+          .filter(UserShifts.self, \UserShifts.$user.$id == userId)
+          .filter(Day.self, \.$day >= dutiesDataReq.from)
+          .filter(Day.self, \.$day <= dutiesDataReq.through)
+        //.context(Duty.self, Day.self).context(Duty.self, Location.self) Already checked by SQL database on insertion
           .all()
-        //TODO: Use the role to find the users context
-        /*      
-                let userRole = try await UserRoles.query(on: req.db)
-                .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-                .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
-                .filter(User.self, \.$id == userId)
-                .first()
 
-                let role = try userRole!.joined(Role.self)
-         */        
-        
-        for userShift in userShifts {
+        let dutiesDataRes = try userShifts.map { userShift in
             let shift = try userShift.joined(Shift.self)
+            let dayModel = try userShift.joined(Day.self)
+            let location = try userShift.joined(Location.self)
+            let duty = try userShift.joined(Duty.self)
 
-            guard let shiftId = shift.id else {
-                app.logger.warning("Shift does not have id field.")
-                throw Abort(.unauthorized, reason: "Shift does not have id field")
-            }
+            let startTime = shift.start
+            let endTime = shift.end
+            let day = dayModel.day
+            let dayOfWeek = dayModel.dayOfWeek
+            let dayType = dayModel.supplementaryJSON
+            let dutyName = duty.name
+            let dutyDescription = duty.description
+            let locationName = location.name
+            let locationDescription = location.description
 
-            //TODO: filter all of these joins by context
-            let shiftDayPos = try await Shift.query(on: req.db)
-              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
-              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
-              .filter(Day.self, \.$day >= dutiesDataReq.from)
-              .filter(Day.self, \.$day <= dutiesDataReq.through)
-              .filter(Shift.self, \.$id == shiftId)
-              .first()
+            let dutieData = DutiesDataRes.init(
+              startTime: startTime,
+              endTime: endTime,
+              day: day,
+              dayOfWeek: dayOfWeek,
+              dayType: dayType,
+              dutyName: dutyName,
+              dutyDescription: dutyDescription,
+              locationName: locationName,
+              locationDescription: locationDescription
+            )
 
-            if shiftDayPos != nil {
-                let shiftDutyLoc = try await Position.query(on: req.db)
-                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
-                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
-                  .filter(Position.self, \.$id == shiftDayPos!.$position.id)
-                  .first()
-                
-                let position = try shiftDayPos!.joined(Position.self)
-                let dayModel = try shiftDayPos!.joined(Day.self)
-                let location = try shiftDutyLoc!.joined(Location.self)
-                let duty = try shiftDutyLoc!.joined(Duty.self)
-                
-                let startTime = shift.start
-                let endTime = shift.end
-                let day = dayModel.day
-                let dayOfWeek = dayModel.dayOfWeek
-                let dayType = dayModel.supplementaryJSON
-                let dutyName = duty.name
-                let dutyDescription = duty.description
-                let locationName = location.name
-                let locationDescription = location.description
-                
-                let dutiesData = DutiesDataRes.init(
-                  startTime: startTime,
-                  endTime: endTime,
-                  day: day,
-                  dayOfWeek: dayOfWeek,
-                  dayType: dayType,
-                  dutyName: dutyName,
-                  dutyDescription: dutyDescription,
-                  locationName: locationName,
-                  locationDescription: locationDescription
-                )
-                
-                dutiesDataRes.append(dutiesData)
-            }
+            return dutieData
         }
-        print("Duties Date Count: \(dutiesDataRes.count)")
+
         return dutiesDataRes
     }
 
@@ -187,89 +157,58 @@ func routes(_ app: Application) throws {
         var count : Int // Amount of UserShifts you want to be returned after the from date
     }
 
+    //TODO rename route to limit
     protected.post("duties", "user", "count") {req async throws -> [DutiesDataRes] in
         let user = try req.auth.require(User.self)
         let dutiesDataReq = try req.content.decode(DutiesCountDataReq.self)
-        var dutiesDataRes = [DutiesDataRes]()
-        
+
         guard let userId = user.id else {
-            app.logger.warning("User `\(user.email)` does not have id field.")
             throw Abort(.unauthorized, reason: "User `\(user.email)` does not have id field")
         }
-        
+
         let userShifts = try await UserShifts.query(on: req.db)
-          .join(User.self, on: \UserShifts.$user.$id == \User.$id)
           .join(Shift.self, on: \UserShifts.$shift.$id == \Shift.$id)
-          .filter(User.self, \.$id == userId)
+          .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+          .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+          .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+          .join(Location.self, on: \Position.$location.$id == \Location.$id)
+          .filter(UserShifts.self, \UserShifts.$user.$id == userId)
+          .filter(Day.self, \Day.$day >= dutiesDataReq.from)
+        //.context(Duty.self, Day.self).context(Duty.self, Location.self) Already checked by SQL database on insertion
           .limit(dutiesDataReq.count)
           .all()
 
-        //TODO: Use the role to find the users context
-        /*      
-                let userRole = try await UserRoles.query(on: req.db)
-                .join(User.self, on: \UserRoles.$user.$id == \User.$id)
-                .join(Role.self, on: \UserRoles.$role.$id == \Role.$id)
-                .filter(User.self, \.$id == userId)
-                .first()
-                
-                let role = try userRole!.joined(Role.self)
-         */        
-        
-        for userShift in userShifts {
+        let dutiesDataRes = try userShifts.map { userShift in
             let shift = try userShift.joined(Shift.self)
+            let dayModel = try userShift.joined(Day.self)
+            let location = try userShift.joined(Location.self)
+            let duty = try userShift.joined(Duty.self)
 
-            guard let shiftId = shift.id else {
-            app.logger.warning("Shift does not have id field.")
-            throw Abort(.unauthorized, reason: "Shift does not have id field")
+            let startTime = shift.start
+            let endTime = shift.end
+            let day = dayModel.day
+            let dayOfWeek = dayModel.dayOfWeek
+            let dayType = dayModel.supplementaryJSON
+            let dutyName = duty.name
+            let dutyDescription = duty.description
+            let locationName = location.name
+            let locationDescription = location.description
+
+            let dutieData = DutiesDataRes.init(
+              startTime: startTime,
+              endTime: endTime,
+              day: day,
+              dayOfWeek: dayOfWeek,
+              dayType: dayType,
+              dutyName: dutyName,
+              dutyDescription: dutyDescription,
+              locationName: locationName,
+              locationDescription: locationDescription
+            )
+
+            return dutieData
         }
 
-            //TODO: filter all of these joins by context
-            let shiftDayPos = try await Shift.query(on: req.db)
-              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
-              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
-              .filter(Day.self, \.$day >= dutiesDataReq.from)
-              .filter(Shift.self, \.$id == shiftId)
-              .first()
-
-            if shiftDayPos != nil {
-                
-                let shiftDutyLoc = try await Position.query(on: req.db)
-                  .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
-                  .join(Location.self, on: \Position.$location.$id == \Location.$id)
-                  .filter(Position.self, \.$id == shiftDayPos!.$position.id)
-                  .first()
-                
-                let position = try shiftDayPos!.joined(Position.self)
-                let dayModel = try shiftDayPos!.joined(Day.self)
-                let location = try shiftDutyLoc!.joined(Location.self)
-                let duty = try shiftDutyLoc!.joined(Duty.self)
-            
-                let startTime = shift.start
-                let endTime = shift.end
-                let day = dayModel.day
-                let dayOfWeek = dayModel.dayOfWeek
-                let dayType = dayModel.supplementaryJSON
-                let dutyName = duty.name
-                let dutyDescription = duty.description
-                let locationName = location.name
-                let locationDescription = location.description
-                
-                let dutiesData = DutiesDataRes.init(
-                  startTime: startTime,
-                  endTime: endTime,
-                  day: day,
-                  dayOfWeek: dayOfWeek,
-                  dayType: dayType,
-                  dutyName: dutyName,
-                  dutyDescription: dutyDescription,
-                  locationName: locationName,
-                  locationDescription: locationDescription
-                )
-                
-                dutiesDataRes.append(dutiesData)
-            }
-        }
-        
         return dutiesDataRes
     }
 
@@ -349,10 +288,9 @@ func routes(_ app: Application) throws {
         let user = try req.auth.require(User.self)
         let userAvailabilityReq = try req.content.decode(UserAvailabilitySetReq.self)
 
-        return true
-
+        throw Abort(.imATeapot, reason: "I am not implemented.")
+        //return true
     }
-
     
     protected.get("userPermission") { req -> Int in
         let user = try req.auth.require(User.self)

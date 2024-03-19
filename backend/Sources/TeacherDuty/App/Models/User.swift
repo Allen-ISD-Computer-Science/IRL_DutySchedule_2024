@@ -41,7 +41,7 @@ final class User: Model, Content {
 
     init() { }
 
-    struct Availability : Content{
+    struct Availability : Content {
         var periods: [Int?]
     }
 
